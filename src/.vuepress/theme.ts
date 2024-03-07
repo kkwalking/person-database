@@ -11,11 +11,13 @@ export default hopeTheme({
     url: "https://github.com/shzyjbr",
   },
 
-  iconAssets: "fontawesome-with-brands",
+  favicon: "/favicon.ico",
 
-  logo: "https://theme-hope-assets.vuejs.press/logo.svg",
+  // iconAssets: "fontawesome-with-brands",
 
-  repo: "vuepress-theme-hope/vuepress-theme-hope",
+  logo: "http://zzk31.320.io/img/logo.svg",
+
+  repo: "shzyjbr/person-database",
 
   docsDir: "src",
 
