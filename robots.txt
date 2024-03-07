@@ -2,4 +2,4 @@
 User-agent:*
 Disallow:
 
-Sitemap: https://github.com/shzyjbr/sitemap.xml
+Sitemap: https://github.com/shzyjbr/person-database/sitemap.xml
