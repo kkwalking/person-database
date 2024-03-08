@@ -18,6 +18,14 @@ export default sidebar({
       children: ["comeon"],
     },
   ],
+  "/about-the-author": [
+    {
+      text: "作者",
+      icon: "book",
+      collapsible: false,
+      children: ["self-introduction"],
+    },
+  ],
 
 
 });

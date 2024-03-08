@@ -21,6 +21,8 @@ export default hopeTheme({
 
   docsDir: "src",
 
+  breadcrumb: false,
+
   // 导航栏
   navbar,
 
@@ -37,7 +39,7 @@ export default hopeTheme({
     intro: "/intro.html",
     medias: {
       GitHub: "https://github.com/shzyjbr",
-      MrHope: ["https://mister-hope.com", MR_HOPE_AVATAR],
+      // MrHope: ["https://mister-hope.com", MR_HOPE_AVATAR],
     },
   },
 
