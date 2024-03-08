@@ -69,6 +69,14 @@ export default hopeTheme({
     //   serverURL: "https://waline-comment.vuejs.press",
     // },
 
+    feed: {
+      atom: true,
+      json: true,
+      rss: true,
+      image: "http://zzk31.320.io/img/logo.svg",
+      
+    },
+
     components: {
       components: ["Badge", "VPCard"],
     },
