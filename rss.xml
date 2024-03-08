@@ -1,27 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="https://github.com/shzyjbr/person-database/rss.xsl"?>
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="https://shzyjbr.github.com/person-database/person-database/rss.xsl"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <atom:link href="https://github.com/shzyjbr/person-database/rss.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://shzyjbr.github.com/person-database/person-database/rss.xml" rel="self" type="application/rss+xml"/>
     <title>zzk的个人知识库</title>
-    <link>https://github.com/shzyjbr/person-database/</link>
+    <link>https://shzyjbr.github.com/person-database/person-database/</link>
     <description>欢迎来到zzk的个人知识库</description>
     <language>zh-CN</language>
-    <pubDate>Fri, 08 Mar 2024 03:35:43 GMT</pubDate>
-    <lastBuildDate>Fri, 08 Mar 2024 03:35:43 GMT</lastBuildDate>
+    <pubDate>Fri, 08 Mar 2024 07:11:05 GMT</pubDate>
+    <lastBuildDate>Fri, 08 Mar 2024 07:11:05 GMT</lastBuildDate>
     <generator>@vuepress/plugin-feed</generator>
     <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
-    <image>
-      <title>zzk的个人知识库</title>
-      <url>http://zzk31.320.io/img/logo.svg</url>
-      <link>https://github.com/shzyjbr/person-database/</link>
-    </image>
     <category>个人</category>
     <category>项目实践</category>
     <item>
       <title>zzk的个人知识库</title>
-      <link>https://github.com/shzyjbr/person-database/home.html</link>
-      <guid>https://github.com/shzyjbr/person-database/home.html</guid>
-      <source url="https://github.com/shzyjbr/person-database/rss.xml">zzk的个人知识库</source>
+      <link>https://shzyjbr.github.com/person-database/person-database/home.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/home.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">zzk的个人知识库</source>
       <description>友情提示 求个 Star：如果本项目的内容对你有帮助的话，还请点个免费的 Star，这是对我最大的鼓励，感谢。 Java</description>
       <pubDate>Thu, 07 Mar 2024 09:41:42 GMT</pubDate>
       <content:encoded><![CDATA[<div class="hint-container tip">
@@ -40,21 +35,21 @@
     </item>
     <item>
       <title>介绍页</title>
-      <link>https://github.com/shzyjbr/person-database/intro.html</link>
-      <guid>https://github.com/shzyjbr/person-database/intro.html</guid>
-      <source url="https://github.com/shzyjbr/person-database/rss.xml">介绍页</source>
+      <link>https://shzyjbr.github.com/person-database/person-database/intro.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/intro.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">介绍页</source>
       <description>介绍页 问渠哪得清如许，为有源头活水来。一个普通的后端程序员。</description>
       <pubDate>Thu, 07 Mar 2024 09:41:42 GMT</pubDate>
       <content:encoded><![CDATA[
 <p>问渠哪得清如许，为有源头活水来。一个普通的后端程序员。</p>
 ]]></content:encoded>
-      <enclosure url="https://github.com/shzyjbr/person-database/assets/images/cover3.jpg" type="image/jpeg"/>
+      <enclosure url="https://shzyjbr.github.com/person-database/person-database/assets/images/cover3.jpg" type="image/jpeg"/>
     </item>
     <item>
       <title>关于作者</title>
-      <link>https://github.com/shzyjbr/person-database/about-the-author/self-introduction.html</link>
-      <guid>https://github.com/shzyjbr/person-database/about-the-author/self-introduction.html</guid>
-      <source url="https://github.com/shzyjbr/person-database/rss.xml">关于作者</source>
+      <link>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于作者</source>
       <description>23届双非硕，一个小小的后端程序员。</description>
       <category>个人</category>
       <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
@@ -63,9 +58,9 @@
     </item>
     <item>
       <title>浅谈单例模式</title>
-      <link>https://github.com/shzyjbr/person-database/java/about-singleton-pattern.html</link>
-      <guid>https://github.com/shzyjbr/person-database/java/about-singleton-pattern.html</guid>
-      <source url="https://github.com/shzyjbr/person-database/rss.xml">浅谈单例模式</source>
+      <link>https://shzyjbr.github.com/person-database/person-database/java/about-singleton-pattern.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/java/about-singleton-pattern.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">浅谈单例模式</source>
       <description>浅谈单例模式 饿汉模式 缺点：在需要初始化许多对象的时候会导致系统启动较慢，比如在有许多个单例对象的容器中，启动该容器的初始过程会比较长。 懒加载模式 缺点：同步方法锁住了对象，降低了系统的处理速度。 错误的双重锁检查 这样的写法是有问题的。在JVM中， instance = new Singleton(); 语句并不是一个原子操作，分为创建对象和引用...</description>
       <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[
@@ -152,9 +147,9 @@
     </item>
     <item>
       <title>关于死锁的一点笔记</title>
-      <link>https://github.com/shzyjbr/person-database/java/deadlock.html</link>
-      <guid>https://github.com/shzyjbr/person-database/java/deadlock.html</guid>
-      <source url="https://github.com/shzyjbr/person-database/rss.xml">关于死锁的一点笔记</source>
+      <link>https://shzyjbr.github.com/person-database/person-database/java/deadlock.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/java/deadlock.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于死锁的一点笔记</source>
       <description>声明：以下内容均来自书籍《现代操作系统》，内容略有改动。 1.资源 死锁的产生与资源相关，因而先给出资源的定义：在进程对设备、文件等取得排他性访问权时，有可能会出现死锁，为便于讨论，把这类需要排他性使用的对象称为资源（resource）。资源可以是硬件设备（如打印机），或是一组信息（如数据库中一条加锁的记录）。简而言之，资源是随着时间的推移，必须能获得...</description>
       <pubDate>Wed, 05 Apr 2023 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[<blockquote>
@@ -337,9 +332,9 @@ $$
     </item>
     <item>
       <title>项目日志建设之流水日志和程序日志的区分</title>
-      <link>https://github.com/shzyjbr/person-database/java/dif-between-transactionlog-and-programlog.html</link>
-      <guid>https://github.com/shzyjbr/person-database/java/dif-between-transactionlog-and-programlog.html</guid>
-      <source url="https://github.com/shzyjbr/person-database/rss.xml">项目日志建设之流水日志和程序日志的区分</source>
+      <link>https://shzyjbr.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">项目日志建设之流水日志和程序日志的区分</source>
       <description>项目日志建设之流水日志和程序日志的区分 最近项目要求对程序日志进行两类区分，将日志大体记录为流水日志和程序日志。 所谓流水日志，更详细的说是请求响应流水日志，记录的是系统执行的web请求、响应的内容。其主要方面一般包括后端接口调用、后端调用其他服务接口的请求与响应日志。如果项目有对外向其他系统暴露服务，那么还需要包括其他服务调用本系统接口的请求响应日志...</description>
       <category>项目实践</category>
       <pubDate>Fri, 08 Mar 2024 00:00:00 GMT</pubDate>
@@ -430,9 +425,9 @@ $$
     </item>
     <item>
       <title>关于分享内容</title>
-      <link>https://github.com/shzyjbr/person-database/life/comeon.html</link>
-      <guid>https://github.com/shzyjbr/person-database/life/comeon.html</guid>
-      <source url="https://github.com/shzyjbr/person-database/rss.xml">关于分享内容</source>
+      <link>https://shzyjbr.github.com/person-database/person-database/life/comeon.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/life/comeon.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于分享内容</source>
       <description>分享内容 生活分享的内容写在这里</description>
       <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[<h2>分享内容</h2>
