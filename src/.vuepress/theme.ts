@@ -21,7 +21,7 @@ export default hopeTheme({
 
   docsDir: "src",
 
-  breadcrumb: false,
+  breadcrumb: true,
 
   // 导航栏
   navbar,
@@ -56,6 +56,8 @@ export default hopeTheme({
   },
 
   editLink: false,
+  contributors: false,
+  lastUpdated: false,
 
   // 如果想要实时查看任何改变，启用它。注: 这对更新性能有很大负面影响
   // hotReload: true,
