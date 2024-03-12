@@ -5,6 +5,9 @@ date: 2024-03-08
 tag:
   - 日志
 ---
+::: tip 拉个Star
+- 如果<a href='https://github.com/shzyjbr/person-database' target='blank'>本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href='https://github.com/shzyjbr/person-database' target='blank'>GitHub</a>
+:::
 # 项目日志建设之流水日志和程序日志的区分
 
 最近项目要求对程序日志进行两类区分，将日志大体记录为流水日志和程序日志。

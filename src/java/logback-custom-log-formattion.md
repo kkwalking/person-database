@@ -6,6 +6,9 @@ tag:
   - 日志
   - logback
 ---
+::: tip 拉个Star
+- 如果<a href='https://github.com/shzyjbr/person-database' target='blank'>本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href='https://github.com/shzyjbr/person-database' target='blank'>GitHub</a>
+:::
 # 【后端开发】logback自定义日志格式，以json格式为例
 
 ## 一、背景

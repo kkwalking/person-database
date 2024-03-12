@@ -4,7 +4,9 @@ date: 2023-04-05
 tag: 
   - 操作系统
 ---
-
+::: tip 拉个Star
+- 如果<a href='https://github.com/shzyjbr/person-database' target='blank'>本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href='https://github.com/shzyjbr/person-database' target='blank'>GitHub</a>
+:::
 > 声明：以下内容均来自书籍《现代操作系统》，内容略有改动。
 
 ###  1.资源
