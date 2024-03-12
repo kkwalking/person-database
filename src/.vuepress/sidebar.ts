@@ -7,7 +7,7 @@ export default sidebar({
       icon: "book",
       collapsible: false,
       prefix: "java/",
-      children: ["deadlock", "dif-between-transactionlog-and-programlog", "about-singleton-pattern"],
+      children: ["deadlock", "dif-between-transactionlog-and-programlog", "about-singleton-pattern", "logback-custom-log-formattion"],
     },
   ],
   "/life": [

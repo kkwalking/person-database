@@ -1,5 +1,5 @@
 ---
-title: 项目日志建设之流水日志和程序日志的区分
+title: 【后端开发】项目日志建设之流水日志和程序日志的区分
 category: 项目实践
 date: 2024-03-08
 tag:
@@ -76,7 +76,7 @@ tag:
 
 `<File>`标签中的${LOG_HOME}这些都是自定义的变量，比如我的项目的LOG_HOME就是logs，${APP_NAME}就是项目名称，比如在这里就是xxx-gateway，因此组合起来的文件命名格式就是上文描述的格式。
 
-`<encoder>`用来自定义一条日志打印的具体格式，在这里不再展开，后续会写一篇如何自定义日志格式的文章。
+`<encoder>`用来自定义一条日志打印的具体格式，在这里不再展开，这里有我写的一篇关于自定义日志格式的文章:<a href='./logback-custom-log-formattion' target='blank'>logback自定义日志格式，以json格式为例</a>，可以参考。
 
 `<rollingPolicy>`标签使用到logback提供的TimeBasedRollingPolicy，这意味着日志文件将根据大小和时间限制进行滚动。`<fileNamePattern>`指定滚动的时候文件名的格式，`<timeBasedFileNamingAndTriggeringPolicy>`用于控制日志文件大小到达某一阈值需要进行切分。`<maxHistory>`用于控制归档的日志留存的时长，单位是天。
 
