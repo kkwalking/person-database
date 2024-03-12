@@ -3,11 +3,18 @@ import { sidebar } from "vuepress-theme-hope";
 export default sidebar({
   "/": [
     {
-      text: "Java",
+      text: "开发",
       icon: "book",
       collapsible: false,
       prefix: "java/",
       children: ["deadlock", "about-singleton-pattern","dif-between-transactionlog-and-programlog",  "logback-custom-log-formattion"],
+    },
+    {
+      text: "博客",
+      icon: "book",
+      collapsible: false,
+      prefix: "blog/",
+      children: ["hexo-next"],
     },
   ],
   "/life": [

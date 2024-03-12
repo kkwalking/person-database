@@ -1,6 +1,6 @@
 ---
 title: 关于作者
-category: 个人
+tag: 个人
 date: 2024-03-07
 star: 2
 ---

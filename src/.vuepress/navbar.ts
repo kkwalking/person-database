@@ -4,12 +4,12 @@ export default navbar([
   {
     text: "首页",
     icon: "book",
-    link: "/"
+    link: "/",
   },
   {
     text: "知识库",
     icon: "book",
-    link: "/home"
+    link: "/home",
   },
   {
     text: "生活分享",

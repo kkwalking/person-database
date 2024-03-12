@@ -1,6 +1,8 @@
 ---
+title: 介绍页
+tag: 个人
+date: 2024-03-07
 icon: circle-info
-cover: /assets/images/cover3.jpg
 ---
 
 # 介绍页
