@@ -3,7 +3,7 @@ import { navbar } from "vuepress-theme-hope";
 export default navbar([
   {
     text: "首页",
-    icon: "book",
+    icon: "hospital",
     link: "/",
   },
   {
@@ -13,7 +13,7 @@ export default navbar([
   },
   {
     text: "生活分享",
-    icon:"book",
+    icon:"code",
     link: "/life/comeon"
   },
   // {

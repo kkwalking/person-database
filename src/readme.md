@@ -2,7 +2,7 @@
 home: true
 icon: home
 title: zzk的个人知识库
-# heroImage: /logo.svg
+heroImage: /logo.svg
 heroText: zzk's knowledge base
 tagline: 分享一些编程知识和生活感悟
 actions:

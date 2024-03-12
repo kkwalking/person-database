@@ -11,10 +11,17 @@ export default sidebar({
     },
     {
       text: "博客",
-      icon: "book",
+      icon: "blog",
       collapsible: false,
       prefix: "blog/",
       children: ["hexo-next"],
+    },
+    {
+      text: "Redis",
+      icon: "redis",
+      collapsible: false,
+      // prefix: "redis/",
+      children: ["middleware/redis/redis-learn-string", "middleware/redis/redis-learn-list"],
     },
   ],
   "/life": [

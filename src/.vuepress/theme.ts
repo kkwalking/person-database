@@ -14,10 +14,12 @@ export default hopeTheme({
   favicon: "/favicon.ico",
 
   // iconAssets: "fontawesome-with-brands",
+  iconAssets: "//at.alicdn.com/t/c/font_2922463_o9q9dxmps9.css",
 
-  logo: "http://zzk31.320.io/img/logo.svg",
+  logo: "/logo.svg",
 
   repo: "shzyjbr/person-database",
+  pure: true,
 
   docsDir: "src",
 
@@ -54,6 +56,8 @@ export default hopeTheme({
   metaLocales: {
     editLink: "编辑此页",
   },
+
+  
 
   editLink: false,
   contributors: false,
@@ -122,7 +126,9 @@ export default hopeTheme({
     //   serverURL: "https://waline-comment.vuejs.press",
     // },
 
-    feed: true,
+    feed: {
+      rss: true
+    },
 
     components: {
       components: ["Badge", "VPCard"],
