@@ -6,8 +6,8 @@
     <link>https://shzyjbr.github.com/person-database/person-database/</link>
     <description>欢迎来到zzk的个人知识库</description>
     <language>zh-CN</language>
-    <pubDate>Tue, 12 Mar 2024 06:56:22 GMT</pubDate>
-    <lastBuildDate>Tue, 12 Mar 2024 06:56:22 GMT</lastBuildDate>
+    <pubDate>Tue, 12 Mar 2024 07:14:30 GMT</pubDate>
+    <lastBuildDate>Tue, 12 Mar 2024 07:14:30 GMT</lastBuildDate>
     <generator>@vuepress/plugin-feed</generator>
     <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
     <category>个人</category>
@@ -17,9 +17,15 @@
       <link>https://shzyjbr.github.com/person-database/person-database/java/logback-custom-log-formattion.html</link>
       <guid>https://shzyjbr.github.com/person-database/person-database/java/logback-custom-log-formattion.html</guid>
       <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【后端开发】logback自定义日志格式，以json格式为例</source>
-      <description>【后端开发】logback自定义日志格式，以json格式为例 一、背景 在项目开发中，我们有时候会遇到需要指定日志格式的场景，比如项目的日志接入了在线日志收集系统，该收集系统要求日志需要满足其指定的日志格式才会被收集。 接下来，我就以打印json格式的日志为例，向各位分享两种方案。 二、方案 2.1 方案1 通过指定encoder的具体类为net.lo...</description>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 【后端开发】logback自定义日志格式，以json格式为例 一、背景 在项目开发中，我们有时候会遇到需要指定日志格式的场景，比如项目的日志接入了在线日志收集系统，该收集系统要求日志需要满足其指定的日志格式才会被收集。 接下来，我就以打印json格式的日志为例...</description>
       <pubDate>Tue, 12 Mar 2024 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<h1>【后端开发】logback自定义日志格式，以json格式为例</h1>
 <h2>一、背景</h2>
 <p>在项目开发中，我们有时候会遇到需要指定日志格式的场景，比如项目的日志接入了在线日志收集系统，该收集系统要求日志需要满足其指定的日志格式才会被收集。</p>
 <p>接下来，我就以打印json格式的日志为例，向各位分享两种方案。</p>
@@ -160,12 +166,12 @@
       <link>https://shzyjbr.github.com/person-database/person-database/home.html</link>
       <guid>https://shzyjbr.github.com/person-database/person-database/home.html</guid>
       <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">zzk的个人知识库</source>
-      <description>友情提示 求个 Star：如果本项目的内容对你有帮助的话，还请点个免费的 Star，这是对我最大的鼓励，感谢。 Java</description>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub Java</description>
       <pubDate>Thu, 07 Mar 2024 09:41:42 GMT</pubDate>
       <content:encoded><![CDATA[<div class="hint-container tip">
-<p class="hint-container-title">友情提示</p>
+<p class="hint-container-title">拉个Star</p>
 <ul>
-<li><strong>求个 Star</strong>：如果本项目的内容对你有帮助的话，还请点个免费的 Star，这是对我最大的鼓励，感谢。</li>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
 </ul>
 </div>
 <h2>Java</h2>
@@ -193,10 +199,10 @@
       <link>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</link>
       <guid>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</guid>
       <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于作者</source>
-      <description>23届双非硕，一个小小的后端程序员，来自广东汕头。</description>
+      <description>23届双非硕，一个小小的后端程序员。</description>
       <category>个人</category>
       <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[<p>23届双非硕，一个小小的后端程序员，来自广东汕头。</p>
+      <content:encoded><![CDATA[<p>23届双非硕，一个小小的后端程序员。</p>
 ]]></content:encoded>
     </item>
     <item>
@@ -204,9 +210,15 @@
       <link>https://shzyjbr.github.com/person-database/person-database/java/about-singleton-pattern.html</link>
       <guid>https://shzyjbr.github.com/person-database/person-database/java/about-singleton-pattern.html</guid>
       <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【设计模式】浅谈单例模式</source>
-      <description>浅谈单例模式 饿汉模式 缺点：在需要初始化许多对象的时候会导致系统启动较慢，比如在有许多个单例对象的容器中，启动该容器的初始过程会比较长。 懒加载模式 缺点：同步方法锁住了对象，降低了系统的处理速度。 错误的双重锁检查 这样的写法是有问题的。在JVM中， instance = new Singleton(); 语句并不是一个原子操作，分为创建对象和引用...</description>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 浅谈单例模式 饿汉模式 缺点：在需要初始化许多对象的时候会导致系统启动较慢，比如在有许多个单例对象的容器中，启动该容器的初始过程会比较长。 懒加载模式 缺点：同步方法锁住了对象，降低了系统的处理速度。 错误的双重锁检查 这样的写法是有问题的。在JVM中， in...</description>
       <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<h1>浅谈单例模式</h1>
 <h4>饿汉模式</h4>
 <div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
     <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -293,9 +305,15 @@
       <link>https://shzyjbr.github.com/person-database/person-database/java/deadlock.html</link>
       <guid>https://shzyjbr.github.com/person-database/person-database/java/deadlock.html</guid>
       <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【操作系统】关于死锁的一点笔记</source>
-      <description>声明：以下内容均来自书籍《现代操作系统》，内容略有改动。 1.资源 死锁的产生与资源相关，因而先给出资源的定义：在进程对设备、文件等取得排他性访问权时，有可能会出现死锁，为便于讨论，把这类需要排他性使用的对象称为资源（resource）。资源可以是硬件设备（如打印机），或是一组信息（如数据库中一条加锁的记录）。简而言之，资源是随着时间的推移，必须能获得...</description>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 声明：以下内容均来自书籍《现代操作系统》，内容略有改动。 1.资源 死锁的产生与资源相关，因而先给出资源的定义：在进程对设备、文件等取得排他性访问权时，有可能会出现死锁，为便于讨论，把这类需要排他性使用的对象称为资源（resource）。资源可以是硬件设备（如...</description>
       <pubDate>Wed, 05 Apr 2023 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[<blockquote>
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<blockquote>
 <p>声明：以下内容均来自书籍《现代操作系统》，内容略有改动。</p>
 </blockquote>
 <h3>1.资源</h3>
@@ -478,10 +496,16 @@ $$
       <link>https://shzyjbr.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</link>
       <guid>https://shzyjbr.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</guid>
       <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【后端开发】项目日志建设之流水日志和程序日志的区分</source>
-      <description>项目日志建设之流水日志和程序日志的区分 最近项目要求对程序日志进行两类区分，将日志大体记录为流水日志和程序日志。 所谓流水日志，更详细的说是请求响应流水日志，记录的是系统执行的web请求、响应的内容。其主要方面一般包括后端接口调用、后端调用其他服务接口的请求与响应日志。如果项目有对外向其他系统暴露服务，那么还需要包括其他服务调用本系统接口的请求响应日志...</description>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 项目日志建设之流水日志和程序日志的区分 最近项目要求对程序日志进行两类区分，将日志大体记录为流水日志和程序日志。 所谓流水日志，更详细的说是请求响应流水日志，记录的是系统执行的web请求、响应的内容。其主要方面一般包括后端接口调用、后端调用其他服务接口的请求与...</description>
       <category>项目实践</category>
       <pubDate>Fri, 08 Mar 2024 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<h1>项目日志建设之流水日志和程序日志的区分</h1>
 <p>最近项目要求对程序日志进行两类区分，将日志大体记录为流水日志和程序日志。</p>
 <p>所谓流水日志，更详细的说是请求响应流水日志，记录的是系统执行的web请求、响应的内容。其主要方面一般包括后端接口调用、后端调用其他服务接口的请求与响应日志。如果项目有对外向其他系统暴露服务，那么还需要包括其他服务调用本系统接口的请求响应日志。</p>
 <p>而程序日志则是我们原来熟知的在程序中记录的一些常规日志，如记录异常请求处理、运行中一些助于排查的信息记录等，可以说是除了流水日志外的其他日志。</p>
