@@ -6,667 +6,17 @@
     <link>https://shzyjbr.github.com/person-database/person-database/</link>
     <description>欢迎来到zzk的个人知识库</description>
     <language>zh-CN</language>
-    <pubDate>Tue, 12 Mar 2024 08:55:44 GMT</pubDate>
-    <lastBuildDate>Tue, 12 Mar 2024 08:55:44 GMT</lastBuildDate>
+    <pubDate>Mon, 18 Mar 2024 06:20:34 GMT</pubDate>
+    <lastBuildDate>Mon, 18 Mar 2024 06:20:34 GMT</lastBuildDate>
     <generator>@vuepress/plugin-feed</generator>
     <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
     <category>中间件</category>
     <category>项目实践</category>
     <item>
-      <title>【Redis】Redis学习笔记之链表</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-list.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-list.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【Redis】Redis学习笔记之链表</source>
-      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的Redis-3.0-annotated版本 一、Redis中的链表应用场景 链表是一种应用非常广泛的数据结...</description>
-      <category>中间件</category>
-      <pubDate>Sat, 14 Oct 2023 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[<div class="hint-container tip">
-<p class="hint-container-title">拉个Star</p>
-<ul>
-<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
-</ul>
-</div>
-<blockquote>
-<p>本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的<a href="https://github.com/huangz1990/redis-3.0-annotated" target="_blank" rel="noopener noreferrer">Redis-3.0-annotated</a>版本</p>
-</blockquote>
-<h2>一、Redis中的链表应用场景</h2>
-<p>链表是一种应用非常广泛的数据结构，在很多语言中都有相应的实现和使用，比如Java中的LinkedList。C语言中并没有内置的链表实现，因此Redis实现了自己的链表结构，并将它应用在许多场景，比如我们在Redis中使用的list，其底层就是用链表实现的。</p>
-<p>Redis中的list是由字符串值组成的双向链表，其基本用法如下：</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>127.0.0.1:6379&gt; lpush fruits apple banana orange
-(integer) 3
-127.0.0.1:6379&gt;
-</code></pre></div><p>Redis中的list支持从两边对链表进行操作，其主要使用的命令有LPUSH，RPUSH，LPOP，RPOP。</p>
-<p>利用这些命令，可以把list作为队列或者栈来使用。</p>
-<p>比如组合使用LPUSH和RPOP，即左进右出，那么可以模拟成<strong>队列</strong>。当然也可以反过来，RPUSH和LPOP，即右进左出。比如像下面这样使用：</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>127.0.0.1:6379&gt; lpush fruits apple banana orange
-(integer) 3
-127.0.0.1:6379&gt; rpop fruits
-"apple"
-</code></pre></div><h2>二、Redis的链表实现</h2>
-<p>Redis中的链表实现与常见的链表差不多，基本结构有listNode和list。listNode是链表节点结构，list是链表结构。listNode的基本结构如下：</p>
-<div class="language-c" data-ext="c" data-title="c"><pre class="language-c"><code><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">listNode</span> <span class="token punctuation">{</span>
-
-    <span class="token comment">// 前置节点</span>
-    <span class="token keyword">struct</span> <span class="token class-name">listNode</span> <span class="token operator">*</span>prev<span class="token punctuation">;</span>
-    <span class="token comment">// 后置节点</span>
-    <span class="token keyword">struct</span> <span class="token class-name">listNode</span> <span class="token operator">*</span>next<span class="token punctuation">;</span>
-    <span class="token comment">// 节点的值</span>
-    <span class="token keyword">void</span> <span class="token operator">*</span>value<span class="token punctuation">;</span>
-
-<span class="token punctuation">}</span> listNode<span class="token punctuation">;</span>
-</code></pre></div><p>next指针作为前向指针，可以沿着表头到表尾的方向进行遍历；prev指针作为后向指针，可以沿着表尾到表头的方向进行遍历；value是一个值指针。</p>
-<p>使用listNode组成的双向链表结构如下所示:</p>
-<figure><img src="http://zzk31.320.io/img/20230521171907.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<p>list的结构如下所示：</p>
-<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>typedef struct list {
-
-    // 头节点
-    listNode *head;
-    // 尾节点
-    listNode *tail;
-    // 链表长度，即链表所包含的节点数
-    unsigned long len;
-    // 节点值复制函数
-    void *(*dup)(void *ptr);
-    // 节点值释放函数
-    void (*free)(void *ptr);
-    // 节点值对比函数
-    int (*match)(void *ptr, void *key);
-
-} list;
-</code></pre></div><p>通过list 结构可以很方便地取到链表的头节点、尾节点以及链表长度。dup 、 free 和 match 属性是用于实现多态链表所需的类型特定函数，具体地，dup 函数用于复制链表节点所保存的值；free 函数用于释放链表节点所保存的值；match 函数则用于对比链表节点所保存的值和另一个输入值是否相等。使用list之后的链表结构如下：</p>
-<figure><img src="http://zzk31.320.io/img/20230521172758.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<p>Redis 的链表实现的特性可以总结如下：</p>
-<ul>
-<li>双端： listNode有 prev 和 next 指针， 可以以$O(1)$的时间复杂度获取某个节点的前置节点和后置节点</li>
-<li>无环： 表头节点的 prev 指针和表尾节点的 next 指针都为 NULL ， 对链表的访问以 NULL 为终点</li>
-<li>带表头指针和表尾指针： 通过 list的 head 指针和 tail 指针可以很容易获取表头结点和表尾节点</li>
-<li>$O(1)$时间复杂度获取链表长度：list 的len 属性来记录了链表节点</li>
-<li>多态： listNode使用 void* 指针来保存节点值， 并且可以通过 list 的 dup 、free 、match 三个属性为节点值设置类型特定函数， 所以链表可以用于保存各种不同类型的值并且应用不同的复制函数、内存释放函数和匹配函数。</li>
-</ul>
-<h2>三、list中一些函数的源码实现</h2>
-<ol>
-<li>将元素插入到list表头，如下图所示，向表头插入val0之后list的变化，红色的相关指针是发生变化的指针。</li>
-</ol>
-<figure><img src="http://zzk31.320.io/img/20230521230420.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>/*
- * 使用给定的value值构造新的节点并添加到链表的表头
- * 如果为新节点分配内存出错，那么不执行任何动作，仅返回 NULL
- * 如果执行成功，返回传入的链表指针
- * T = O(1)
- */
-list *listAddNodeHead(list *list, void *value)
-{
-    listNode *node;
-
-    // 为节点分配内存
-    if ((node = zmalloc(sizeof(*node))) == NULL)
-        return NULL;
-
-    // 保存值指针
-    node-&gt;value = value;
-
-    // 添加节点到空链表
-    // 当链表为空时，新插入的节点既是头结点也是尾结点
-    if (list-&gt;len == 0) {
-        list-&gt;head = list-&gt;tail = node;
-        // 注意头结点的前驱指针应该为空，尾结点的后继指针应该为空
-        node-&gt;prev = node-&gt;next = NULL;
-    // 添加节点到非空链表
-    // 当链表非空时,采用头插法将新插入节点链接到链表头部,并更新list的head指针
-    } else {
-        node-&gt;prev = NULL; //注意头结点的前驱指针应该为空
-        node-&gt;next = list-&gt;head;
-        list-&gt;head-&gt;prev = node;
-        list-&gt;head = node;
-    }
-
-    // 更新链表节点数
-    list-&gt;len++;
-
-    return list;
-}
-</code></pre></div><ol start="2">
-<li>将元素插入到list表尾，如下图所示，想表尾插入val5之后list的变化，红色的相关指针是发生变化的指针。</li>
-</ol>
-<figure><img src="http://zzk31.320.io/img/20230521230452.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>/*
- * 使用给定的value值构造新的节点并添加到链表的表尾
- * 如果为新节点分配内存出错，那么不执行任何动作，仅返回 NULL
- * 如果执行成功，返回传入的链表指针
- * T = O(1)
- */
-list *listAddNodeTail(list *list, void *value)
-{
-    listNode *node;
-
-    // 为新节点分配内存
-    if ((node = zmalloc(sizeof(*node))) == NULL)
-        return NULL;
-
-    // 保存值指针
-    node-&gt;value = value;
-
-    // 目标链表为空
-    // 当链表为空时，新插入的节点既是头结点也是尾结点
-    if (list-&gt;len == 0) {
-        list-&gt;head = list-&gt;tail = node;
-        // 注意头结点的前驱指针应该为空，尾结点的后继指针应该为空
-        node-&gt;prev = node-&gt;next = NULL;
-    // 目标链表非空
-    } else {
-        node-&gt;prev = list-&gt;tail;
-        node-&gt;next = NULL;
-        list-&gt;tail-&gt;next = node;
-        list-&gt;tail = node;
-    }
-
-    // 更新链表节点数
-    list-&gt;len++;
-
-    return list;
-}
-</code></pre></div><ol start="3">
-<li>创建list，如下图所示，其中NULL指针没有画出：</li>
-</ol>
-<figure><img src="http://zzk31.320.io/img/20230521230555.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>/*
- * 创建一个新的链表
- * 创建成功返回链表，失败返回 NULL 。
- * T = O(1)
- */
-list *listCreate(void)
-{
-    struct list *list;
-
-    // 分配内存
-    if ((list = zmalloc(sizeof(*list))) == NULL)
-        return NULL;
-
-    // 初始化各项属性
-    list-&gt;head = list-&gt;tail = NULL;
-    list-&gt;len = 0;
-    list-&gt;dup = NULL;
-    list-&gt;free = NULL;
-    list-&gt;match = NULL;
-
-    return list;
-}
-</code></pre></div>]]></content:encoded>
-      <enclosure url="http://zzk31.320.io/img/20230521171907.png" type="image/png"/>
-    </item>
-    <item>
-      <title>【Redis】Redis学习笔记之字符串</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-string.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-string.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【Redis】Redis学习笔记之字符串</source>
-      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的Redis-3.0-annotated版本 一、SDS基本概念介绍 Redis有五种基础数据结构，分别是s...</description>
-      <category>中间件</category>
-      <pubDate>Thu, 12 Oct 2023 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[<div class="hint-container tip">
-<p class="hint-container-title">拉个Star</p>
-<ul>
-<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
-</ul>
-</div>
-<blockquote>
-<p>本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的<a href="https://github.com/huangz1990/redis-3.0-annotated" target="_blank" rel="noopener noreferrer">Redis-3.0-annotated</a>版本</p>
-</blockquote>
-<h2>一、SDS基本概念介绍</h2>
-<p>Redis有五种基础数据结构，分别是string（字符串）、list（列表）、hash（字典）、set（集合）以及zset（也叫做sorted set，有序集合）。其中，Redis中的字符串采用了一种名为简单动态字符串的类型（simple dynamic string, SDS），而不是C字符串（具体原因后续会解释）。在Redis中，C字符串仅作为字符串字面量，即类似<code>"Hello, world"</code>，而在需要使用可修改的字符串的地方，均采用SDS来表示字符串。</p>
-<p>当客户端执行命令：</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>redis&gt; SET name zzk
-OK
-</code></pre></div><p>Redis将在数据库中创建一个新的键值对。其中，键值对的key是一个SDS对象，其中包含着字符串"name"；value是一个SDS对象，内部包含着字符串“zzk”。</p>
-<p>又如，当客户端执行如下命令：</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>redis&gt; LPUSH classmates xiaoming xiaohong xiaobai
-</code></pre></div><p>Redis将在数据库中创建一个键值对，其中，key是一个包含着字符串"classmates"的SDS对象，value是一个list对象。这个list对象有三个元素，每个元素都是一个SDS对象，第一个SDS对象包含字符串"xiaoming"，第二个SDS对象包含字符串"xiaohong"等。</p>
-<p>从上述例子可以看出，SDS作为Redis的字符串实现，被频繁用在各种使用场景。</p>
-<h2>二、为什么使用SDS而不是C字符串？</h2>
-<blockquote>
-<p>以下涉及的Redis代码来自Redis3.0，虽然Redis目前已经更新到7.0，但是数据结构的实现原理是一脉相承的，3.0版本的代码更加简单，有助于原理的理解。</p>
-</blockquote>
-<p>SDS的结构定义如下：</p>
-<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>struct sdshdr {
-
-    int len;
-    
-    int free;
-    
-    char buf[];
-
-};
-</code></pre></div><p>其中，buf是一个字符数组，用于保存字符串；len用于记录buf数组中已使用字节的数量，也就是SDS所保存的字符串的长度；free用于记录buf数组中未使用字节的数量。</p>
-<p>下图表示一个包含字符串“zzk”的SDS对象。</p>
-<figure><img src="http://zzk31.320.io/img/20230521135841.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<p>在这个SDS对象中，buf是一个char数组，其数组内容为:'z'，'z'，'k'和末尾的'\0'。free为0表示没有多余的字节可供使用，len为3表示这个SDS的字符串长度为3（与C字符串长度定义一样，不包括末尾的'\0'）</p>
-<p>下图展示了另一个SDS对象的内部结构：</p>
-<figure><img src="http://zzk31.320.io/img/20230521135902.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<p>在这个SDS对象中，buf数组的内容为"sea"(末尾还有个'\0')，len为3表示这个SDS的字符串长度为3，而free为3表示这个buf数组还有3个字节未被使用。</p>
-<h3>1. 常数时间获取字符串长度</h3>
-<p>从上述两个例子可以看出，buf数组的实际大小并不总是等于（字符串长度+1）。</p>
-<p>而在C语言中，一个C字符串例子如下：</p>
-<figure><img src="http://zzk31.320.io/img/20230521135922.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<p>可以看出，C字符串并不包含长度信息，当需要获取字符串长度信息时，需要遍历一遍字符串才能计算出其长度，时间复杂度为$O(n) $,n为字符串长度。（题外话：strlen()是求C字符串长度函数，有时候编程不注意，还可能将strlen()写到循环判断条件中，造成复杂度提升一个量级）</p>
-<p>因此，追求效率的Redis并没有直接采用C字符串作为字符串实现，而是使用了len来记录当前使用的字符大小，从而将时间复杂度降低到$O(1)$。</p>
-<h3>2. 防止缓冲区溢出</h3>
-<p>如果使用不当，C字符串还可能带来缓冲区溢出的问题。</p>
-<p>假设如下情况，有两个C字符串s1和s2，他们的空间分配位置如下，s2紧挨在s1后面。</p>
-<figure><img src="http://zzk31.320.io/img/20230521140010.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<p>若直接调用C函数strcat(s1, ",Lucy")，企图将s1的内容修改为"Hey,Lucy"，这样做确实能达到目的。然而，这种方式是错误的，正确的方式应该是在调用strcat()之前为s1分配足够的空间，而不是不经检查地直接调用。因为这种方式会导致s2被覆盖，称之为缓冲区溢出现象，如下图所示：</p>
-<figure><img src="http://zzk31.320.io/img/20230521135953.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<p>而SDS的设计则避免了这一情况。当需要对SDS进行扩充时，SDS中的free属性使得SDS的API很容易检查SDS的剩余空间是否满足修改的需要，如果不满足的话，会为SDS分配一个新的容量足够的buf数组，再去执行修改操作。因此，SDS的使用者不需要手动修改SDS空间大小，也不用担心出现缓冲区溢出问题。</p>
-<h3>3. 提高内存重分配效率</h3>
-<p>如前所述，C字符串本身并不保存自身的长度信息，而是通过在字符串末尾添加一个'\0'来标识字符串结束。因此，对于一个包含了 N 个字符的 C 字符串来说， 这个 C 字符串的底层实现总是一个 N+1 个字符长的数组（额外的一个字符用于保存'\0'字符）。</p>
-<p>这种关联性使得对C字符串的增加或者删除字符操作总是伴随着内存重分配操作。</p>
-<p>仍以C字符串的拼接场景为例，若要在值为“hello”的字符串s1后面拼接上“,world”，那么在调用<code>strcat(s1,",world");</code>操作之前，需要先为s1分配足够大的空间，否则就会发生缓冲区溢出。</p>
-<p>若之后我们想在s1之后在拼接上"!!!"，那么在调用<code>strcat(s1,"!!!");</code>操作之前又需要为s1分配空间。</p>
-<p>这种频繁分配空间的方式会带来性能开销，而Redis作为高性能的缓冲中间件，若是采用这种方式则必然对性能造成影响。</p>
-<p>因此，SDS采用了空间预分配方式来解决这一问题。在 SDS 中， buf 数组的长度不一定就是实际存储的字符数量加一， 数组里面可以包含未使用的字节， 而SDS 的 free 属性记录了这些字节的数量 。</p>
-<h3>4.SDS的空间预分配策略</h3>
-<p>空间预分配策略用于优化 SDS 的字符串增长操作： 当 SDS 的 API 对一个 SDS 进行修改， 并且需要对 SDS 进行空间扩展的时候， 程序不仅会为 SDS 分配修改所必须要的空间， 还会为 SDS 分配额外的未使用空间。</p>
-<p>其中， 额外分配的未使用空间数量由以下规则决定：</p>
-<ul>
-<li>如果对 SDS 进行修改之后， SDS 的长度 len 小于 1 MB ， 那么程序分配和 len 属性同样大小的未使用空间， 这时 SDS len 属性的值和 free 属性的值相同。 举个例子， 如果进行修改之后， SDS 的 len 将变成 10 字节， 那么程序也会分配13 字节的未使用空间， SDS 的 buf 数组的实际长度将变成 10+ 10 + 1 = 21 字节（额外的一字节用于保存'\0'字符）</li>
-<li>如果对 SDS 进行修改之后， SDS 的长度将大于等于 1 MB ， 那么程序会分配 1 MB 的未使用空间。 举个例子， 如果进行修改之后， SDS 的 len 将变成 10 MB ， 那么程序会分配 1 MB 的未使用空间， SDS 的 buf 数组的实际长度将为 10 MB + 1 MB + 1 byte 。</li>
-</ul>
-<p>第一条规则简单地说就是成倍增长规则，只不过这个基数是修改之后的长度。第二条规则是因为Redis需要在性能和效率之间取舍，如果达到了1MB的级别还是采用成倍增长规则，那么SDS的增长速度很快导致大量的内存空间占用。</p>
-<p>通过这种预分配策略， SDS 将连续增长 N 次字符串所需的内存重分配次数从必定 N 次降低为最多 N 次。</p>
-<p><strong>此外，SDS还采用了惰性空间释放方式。</strong></p>
-<p>所谓惰性空间释放是指， 当 SDS 的 API 需要缩短 SDS 保存的字符串时， 程序并不立即使用内存重分配来回收缩短后多出来的字节， 而是使用 free 属性将这些字节的数量记录起来， 并等待将来使用。也就是说，惰性空间释放用于优化 SDS 的字符串缩短操作。</p>
-<p>例如， sdstrim 函数接受一个 SDS 和一个 C字符串作为参数， 从 SDS 左右两端分别移除所有在 C字符串中出现过的字符。</p>
-<p>执行<code>sdstrim(s, "AA..");</code>后SDS的结构变化如下图所示：</p>
-<figure><img src="http://zzk31.320.io/img/20230521140039.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<p>可以看到，并没有回收三个'A'字符所占的空间，而是使用free记录了剩余空间。</p>
-<p>当在下一次对SDS进行修改操作，比如调用<code>strcat(s, "zzk")</code>时，不必在进行内存重分配，因为有足够的剩余空间支持拼接操作，结果如下所示：</p>
-<figure><img src="http://zzk31.320.io/img/20230521134208.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
-<h3>5.二进制安全</h3>
-<p>此外，在C字符串中，由于只使用'\0'来表示字符串结束，因此，一个字符串里面不能包含空字符，否则就会被认为是字符串结尾。这就使得C字符串只能存储文本数据，而不能存储二进制数据如图片、视频等。</p>
-<p>而Redis的SDS则可以用来存储二进制数据，SDS不靠空字符来标识存储内容的结束，而是通过len来标识。buf[]数组是一个char数据，可以直接用于存储二进制数据（只需要定义好编解码格式即可进行读写）。</p>
-<p>当然，另一方面，SDS也会在字符串末尾添加'\0'，因此SDS也可以复用部分C字符串函数。</p>
-]]></content:encoded>
-      <enclosure url="http://zzk31.320.io/img/20230521135841.png" type="image/png"/>
-    </item>
-    <item>
-      <title>hexo搭建个人博客+NexT主题</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/blog/hexo-next.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/blog/hexo-next.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">hexo搭建个人博客+NexT主题</source>
-      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 1 hexo简介 Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，生成静态网页。 --Hexo官网 2 hexo安装 安装hexo需要先安装node.js和Git 2.1 安装node.js Node.j...</description>
-      <pubDate>Fri, 27 Nov 2020 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[<div class="hint-container tip">
-<p class="hint-container-title">拉个Star</p>
-<ul>
-<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
-</ul>
-</div>
-<h3>1 hexo简介</h3>
-<blockquote>
-<p>Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 <a href="http://daringfireball.net/projects/markdown/" target="_blank" rel="noopener noreferrer">Markdown</a>（或其他渲染引擎）解析文章，生成静态网页。   --<a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener noreferrer">Hexo</a>官网</p>
-</blockquote>
-<h3>2 hexo安装</h3>
-<p>安装hexo需要先安装node.js和Git</p>
-<h4>2.1 安装node.js</h4>
-<blockquote>
-<p>Node.js 版本需不低于 10.13，建议使用 Node.js 12.0 及以上版本</p>
-</blockquote>
-<p>通过node.js官网下载安装版进行安装，选择14.15.1长期支持版 官网：<a href="https://nodejs.org/zh-cn/" target="_blank" rel="noopener noreferrer">Node.js</a></p>
-<figure><img src="https://i.loli.net/2020/11/27/Eym3zR8bX1FpcxT.png" alt="image-20201127135412872.png" tabindex="0" loading="lazy"><figcaption>image-20201127135412872.png</figcaption></figure>
-<p>安装过程与普通软件安装没有差别，一路next。</p>
-<h4>2.2 安装Git</h4>
-<p>通过Git官网下载Git安装版进行安装，安装版本2.29.2 官网：<a href="https://git-scm.com/" target="_blank" rel="noopener noreferrer">Git (git-scm.com)</a></p>
-<figure><img src="https://i.loli.net/2020/11/27/Dew6M4naP5Aucby.png" alt="git.png" tabindex="0" loading="lazy"><figcaption>git.png</figcaption></figure>
-<h4>2.3 正式安装hexo</h4>
-<p>安装好node.js和Git之后就可以开始进行hexo的安装</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>npm install -g hexo-cli
-</code></pre></div><p>安装成功之后可以在cmd命令行中输入hexo，查看是否安装成功</p>
-<figure><img src="https://i.loli.net/2020/11/27/P4Mktm3IlERVxoC.png" alt="image-20201127140007483" tabindex="0" loading="lazy"><figcaption>image-20201127140007483</figcaption></figure>
-<p>出现如下提示则表示安装成功。</p>
-<h3>3 使用hexo搭建博客</h3>
-<h4>3.1 初始化</h4>
-<p>在Windows中创建一个文件夹，作为想要搭建的博客的根目录，比如我的就是 D:\blog\hexo</p>
-<p><strong>在cmd中进入根目录下</strong>，使用如下命令初始化，该命令会在根目录下创建hexo所需的文件</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>hexo init
-</code></pre></div><p>创建完成之后的目录如下所示：</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>.
-├── _config.yml
-├── package.json
-├── scaffolds
-├── source
-|   ├── _drafts
-|   └── _posts
-└── themes
-</code></pre></div><p>其中_config.yml称为站点配置文件，对应的，themes/_config.yml称为主题配置文件。
-简单解释下两个配置文件。根目录下的_config.yml是对整个博客站点的内容进行设置。hexo的博客可以指定多种主题，主题的配置是通过themes/_config.yml进行设置的。</p>
-<h4>3.2 启动hexo</h4>
-<p>使用如下命令可以启动hexo，进行快速效果预览。</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>hexo server
-</code></pre></div><p>可以看到出现如下提示：</p>
-<p><img src="https://i.loli.net/2020/11/27/qUmerCBi3Wcf6aF.png" alt="image-20201127141157314.png" loading="lazy">)</p>
-<p>浏览器访问localhost:4000可以看到博客搭建成功。</p>
-<figure><img src="https://i.loli.net/2020/11/27/w5hLyImDjSJio1k.png" alt="image-20201127141428928.png" tabindex="0" loading="lazy"><figcaption>image-20201127141428928.png</figcaption></figure>
-<h3>4. 使用NexT主题</h3>
-<p>hexo可以通过指定不同的主题，达到更换博客风格的目的。hexo的主题可以访问<a href="https://hexo.io/themes/" target="_blank" rel="noopener noreferrer">Themes | Hexo</a></p>
-<p>本次选用Text主题。</p>
-<h4>4.1 下载NexT主题</h4>
-<p>我们通过Git来下载。</p>
-<p><strong>在cmd目录下进入根目录</strong>，使用如下命令。</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>git clone https://github.com/iissnan/hexo-theme-next themes/next
-</code></pre></div><p>下载完毕后可以看到themes目录下多了一个next文件夹</p>
-<p><em>hexo把所有的主题都放在了themes文件夹里面，所以通常的做法就是把想要使用的主题放到在themes目录下面，之后去站点配置文件里面进行主题的设置。</em></p>
-<h4>4.2 设置站点配置文件，进行主题更换</h4>
-<p>打开站点配置文件_config.yml,  可以使用查找功能定位到themes关键字，修改为如下：</p>
-<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>theme: next
-</code></pre></div><h4>4.3 启动博客进行验证</h4>
-<p>输入<code>hexo server</code>启动博客，可以看到主题已经更换为NexT主题。</p>
-<p><em>下图的NexT主题经过了其他设置，所以你的主题可能和我看起来有点不一样</em></p>
-<figure><img src="https://i.loli.net/2020/11/27/TO42oeM7bp8xQ6y.png" alt="image-20201127145135433.png" tabindex="0" loading="lazy"><figcaption>image-20201127145135433.png</figcaption></figure>
-]]></content:encoded>
-      <enclosure url="https://i.loli.net/2020/11/27/Eym3zR8bX1FpcxT.png" type="image/png"/>
-    </item>
-    <item>
-      <title>【后端开发】logback自定义日志格式，以json格式为例</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/java/logback-custom-log-formattion.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/java/logback-custom-log-formattion.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【后端开发】logback自定义日志格式，以json格式为例</source>
-      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 【后端开发】logback自定义日志格式，以json格式为例 一、背景 在项目开发中，我们有时候会遇到需要指定日志格式的场景，比如项目的日志接入了在线日志收集系统，该收集系统要求日志需要满足其指定的日志格式才会被收集。 接下来，我就以打印json格式的日志为例...</description>
-      <pubDate>Tue, 12 Mar 2024 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[<div class="hint-container tip">
-<p class="hint-container-title">拉个Star</p>
-<ul>
-<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
-</ul>
-</div>
-<h1>【后端开发】logback自定义日志格式，以json格式为例</h1>
-<h2>一、背景</h2>
-<p>在项目开发中，我们有时候会遇到需要指定日志格式的场景，比如项目的日志接入了在线日志收集系统，该收集系统要求日志需要满足其指定的日志格式才会被收集。</p>
-<p>接下来，我就以打印json格式的日志为例，向各位分享两种方案。</p>
-<h2>二、方案</h2>
-<h3>2.1 方案1</h3>
-<p>通过指定encoder的具体类为net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder类，在pattern中可以打印指定格式的日志。</p>
-<p>pattern中的变量格式有三类。一类是logback自定义的诸如%level等，一类是如${app_name}这样我们定义在logback.xml中的properties。还有一类形如%X{variable_name}是通过在代码中设置进MDC变量的，关于MDC的使用本文就不展开了，感兴趣请自行搜索。</p>
-<p>直接show出可用的logback配置代码，下面是一个appender的示例代码</p>
-<div class="language-xml" data-ext="xml" data-title="xml"><pre class="language-xml"><code>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>your-appender-name<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.RollingFileAppender<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>File</span><span class="token punctuation">&gt;</span></span>${log_path}/${app_name}-${currentTime}.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>File</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>append</span><span class="token punctuation">&gt;</span></span>true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>append</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.classic.filter.LevelFilter<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>level</span><span class="token punctuation">&gt;</span></span>INFO<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>level</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>onMatch</span><span class="token punctuation">&gt;</span></span>ACCEPT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>onMatch</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>onMismatch</span><span class="token punctuation">&gt;</span></span>DENY<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>onMismatch</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rollingPolicy</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>${log_path}/${app_name}-%d{yyyyMMdd}-%i.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxHistory</span><span class="token punctuation">&gt;</span></span>${logback.file.maxHistory}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxHistory</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>${logback.file.maxFileSize}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>totalSizeCap</span><span class="token punctuation">&gt;</span></span>${logback.file.totalSizeCap}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>totalSizeCap</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rollingPolicy</span><span class="token punctuation">&gt;</span></span>
-        
-        <span class="token comment">&lt;!-- 打印json格式，请重点看这里--&gt;</span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>encoder</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>providers</span><span class="token punctuation">&gt;</span></span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pattern</span><span class="token punctuation">&gt;</span></span>
-                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pattern</span><span class="token punctuation">&gt;</span></span>
-                         <span class="token comment">&lt;!--下面定义出一个json格式的消息，仅做示例--&gt;</span>
-                        <span class="token comment">&lt;!--具体的信息格式请根据你的需求而定--&gt;</span>
-                        {
-                        "app_name": "${app_name}_info",
-                        "level": "%level",
-                        "log_time": "%date{\"yyyy-MM-dd HH:mm:ss.SSS\"}",
-                        <span class="token comment">&lt;!--   "logger": "%logger",  %logger打印logger名字， %class打印具体类名--&gt;</span>
-                        "logger": "%class",
-                        "transaction_id": "%X{transaction_id}",
-                        "address": "%X{address}",
-                        "response_headers": "%X{response_headers}",
-                        "response_payload": "%X{response_payload}",
-                        "response_code": "%X{response_code}"
-                        }
-                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pattern</span><span class="token punctuation">&gt;</span></span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pattern</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>providers</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>encoder</span><span class="token punctuation">&gt;</span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">&gt;</span></span>
-
-</code></pre></div><h3>2.2 方案2</h3>
-<p>另一种打印自定义格式的方法则是通过代码处理。</p>
-<ol>
-<li>首先，继承<code>ch.qos.logback.core.LayoutBase&lt;ILoggingEvent&gt;</code>，并重写doLayout(ILoggingEvent event)方法</li>
-</ol>
-<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token annotation punctuation">@Data</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProgramLayout</span> <span class="token keyword">extends</span> <span class="token class-name">LayoutBase</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ILoggingEvent</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">{</span>
-    <span class="token comment">// 也可以自定义参数，后续可以在logback.xml中传入</span>
-    <span class="token keyword">protected</span> <span class="token class-name">String</span> appName<span class="token punctuation">;</span>
-
-    <span class="token keyword">public</span> <span class="token class-name">ProgramLayout</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token punctuation">}</span>
-
-    <span class="token doc-comment comment">/**
-     * 覆盖该方法，可以定制需要的日志格式
-     * <span class="token keyword">@param</span> <span class="token parameter">event</span> The event to format
-     * <span class="token keyword">@return</span>
-     */</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">doLayout</span><span class="token punctuation">(</span><span class="token class-name">ILoggingEvent</span> event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token class-name">ProgramLogParam</span> params <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ProgramLogParam</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        params<span class="token punctuation">.</span><span class="token function">setApp_name</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>appName<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        params<span class="token punctuation">.</span><span class="token function">setLevel</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getLevel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        params<span class="token punctuation">.</span><span class="token function">setLogger</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getLoggerName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        params<span class="token punctuation">.</span><span class="token function">setLog_time</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Timestamp</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getTimeStamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        params<span class="token punctuation">.</span><span class="token function">setTransaction_id</span><span class="token punctuation">(</span><span class="token class-name">MDCUtil</span><span class="token punctuation">.</span><span class="token function">getTransactionId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment">// 通过event.getFormattedMessage()就可以获取到源消息</span>
-        <span class="token class-name">String</span> message <span class="token operator">=</span> event<span class="token punctuation">.</span><span class="token function">getFormattedMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getThrowableProxy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            <span class="token class-name">ExtendedThrowableProxyConverter</span> throwableConverter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ExtendedThrowableProxyConverter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            throwableConverter<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            message <span class="token operator">=</span> event<span class="token punctuation">.</span><span class="token function">getFormattedMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"\n"</span> <span class="token operator">+</span> throwableConverter<span class="token punctuation">.</span><span class="token function">convert</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            throwableConverter<span class="token punctuation">.</span><span class="token function">stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-
-		<span class="token comment">// 如果打印的源日志消息就包含json格式的字符串，则截取该部分消息作为code_message</span>
-        <span class="token keyword">int</span> beginIndex <span class="token operator">=</span> message<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"{"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">int</span> endIndex <span class="token operator">=</span> message<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">"}"</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>beginIndex <span class="token operator">&gt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            <span class="token class-name">String</span> jsonMsg <span class="token operator">=</span> message<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span>beginIndex<span class="token punctuation">,</span> endIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            params<span class="token punctuation">.</span><span class="token function">setCode_message</span><span class="token punctuation">(</span>jsonMsg<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-            params<span class="token punctuation">.</span><span class="token function">setCode_message</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">return</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>params<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token class-name">CoreConstants</span><span class="token punctuation">.</span><span class="token constant">LINE_SEPARATOR</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre></div><p>ProgramLogParam是个bean，我简单放一下，用了lombok的注解，方便查看</p>
-<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token annotation punctuation">@Data</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProgramLogParam</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> app_name<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> level<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> logger<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> log_time<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> code_message<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> transaction_id<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-</code></pre></div><ol start="2">
-<li>在logback.xml在配置encoder的layout为该ProgramLayout，即可达到打印指定日志格式的目的。</li>
-</ol>
-<div class="language-xml" data-ext="xml" data-title="xml"><pre class="language-xml"><code> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>TRANSACTION_INFO_FILE<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.RollingFileAppender<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-        <span class="token comment">&lt;!-- 正在记录的日志文档的路径及文档名 --&gt;</span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>file</span><span class="token punctuation">&gt;</span></span>${LOG_HOME}/${APP_NAME}_info-info.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>file</span><span class="token punctuation">&gt;</span></span>
-        <span class="token comment">&lt;!--日志文档输出格式--&gt;</span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>encoder</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.encoder.LayoutWrappingEncoder<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>layout</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>com.demo.log.layout.TransactionLayout<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-                <span class="token comment">&lt;!--传入自定义参数--&gt;</span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appName</span><span class="token punctuation">&gt;</span></span>${APP_NAME}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appName</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>layout</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>charset</span><span class="token punctuation">&gt;</span></span>UTF-8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>charset</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>encoder</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rollingPolicy</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.TimeBasedRollingPolicy<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>${LOG_HOME}/${APP_NAME}-%d{yyyy-MM-dd}.%i.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>timeBasedFileNamingAndTriggeringPolicy</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>1024MB<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>timeBasedFileNamingAndTriggeringPolicy</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxHistory</span><span class="token punctuation">&gt;</span></span>2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxHistory</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rollingPolicy</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.classic.filter.LevelFilter<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>level</span><span class="token punctuation">&gt;</span></span>info<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>level</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>onMatch</span><span class="token punctuation">&gt;</span></span>ACCEPT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>onMatch</span><span class="token punctuation">&gt;</span></span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>onMismatch</span><span class="token punctuation">&gt;</span></span>DENY<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>onMismatch</span><span class="token punctuation">&gt;</span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter</span><span class="token punctuation">&gt;</span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">&gt;</span></span>
-</code></pre></div>]]></content:encoded>
-    </item>
-    <item>
-      <title>zzk的个人知识库</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/home.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/home.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">zzk的个人知识库</source>
-      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 操作系统 开发 设计模式 Redis</description>
-      <pubDate>Thu, 07 Mar 2024 09:41:42 GMT</pubDate>
-      <content:encoded><![CDATA[<div class="hint-container tip">
-<p class="hint-container-title">拉个Star</p>
-<ul>
-<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
-</ul>
-</div>
-<h2>操作系统</h2>
-<ul>
-<li><a href="/person-database/java/deadlock.html" target="_blank">关于死锁的一点笔记</a></li>
-</ul>
-<h2>开发</h2>
-<ul>
-<li><a href="/person-database/java/dif-between-transactionlog-and-programlog.html" target="_blank">项目日志建设之流水日志和程序日志的区分</a></li>
-<li><a href="/person-database/java/logback-custom-log-formattion.html" target="_blank">项目日志建设之流水日志和程序日志的区分</a></li>
-</ul>
-<h2>设计模式</h2>
-<ul>
-<li><a href="/person-database/java/about-singleton-pattern.html" target="_blank">浅谈单例模式</a></li>
-</ul>
-<h2>Redis</h2>
-<ul>
-<li><a href="/person-database/middleware/redis/redis-learn-string.html" target="_blank">Redis学习笔记之字符串</a></li>
-<li><a href="/person-database/middleware/redis/redis-learn-list.html" target="_blank">Redis学习笔记之链表</a></li>
-</ul>
-]]></content:encoded>
-    </item>
-    <item>
-      <title>介绍页</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/intro.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/intro.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">介绍页</source>
-      <description>介绍页 问渠哪得清如许，为有源头活水来。一个普通的后端程序员。</description>
-      <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[
-<p>问渠哪得清如许，为有源头活水来。一个普通的后端程序员。</p>
-]]></content:encoded>
-    </item>
-    <item>
-      <title>关于作者</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于作者</source>
-      <description>23届双非硕，一个小小的后端程序员。</description>
-      <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[<p>23届双非硕，一个小小的后端程序员。</p>
-]]></content:encoded>
-    </item>
-    <item>
-      <title>【设计模式】浅谈单例模式</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/java/about-singleton-pattern.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/java/about-singleton-pattern.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【设计模式】浅谈单例模式</source>
-      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 浅谈单例模式 饿汉模式 缺点：在需要初始化许多对象的时候会导致系统启动较慢，比如在有许多个单例对象的容器中，启动该容器的初始过程会比较长。 懒加载模式 缺点：同步方法锁住了对象，降低了系统的处理速度。 错误的双重锁检查 这样的写法是有问题的。在JVM中， in...</description>
-      <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
-      <content:encoded><![CDATA[<div class="hint-container tip">
-<p class="hint-container-title">拉个Star</p>
-<ul>
-<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
-</ul>
-</div>
-<h1>浅谈单例模式</h1>
-<h4>饿汉模式</h4>
-<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> <span class="token function">newInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">return</span> instance<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre></div><p>缺点：在需要初始化许多对象的时候会导致系统启动较慢，比如在有许多个单例对象的容器中，启动该容器的初始过程会比较长。</p>
-<h4>懒加载模式</h4>
-<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-    
-    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
-    
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">synchronized</span> <span class="token class-name">Singleton</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">return</span> instance<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre></div><p>缺点：同步方法锁住了对象，降低了系统的处理速度。</p>
-<h4>错误的双重锁检查</h4>
-<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            <span class="token keyword">synchronized</span><span class="token punctuation">(</span><span class="token class-name">Singleton</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-                <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-                    instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token punctuation">}</span>
-            <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">return</span> instance<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre></div><p>这样的写法是有问题的。在JVM中， instance = new Singleton(); 语句并不是一个原子操作，分为创建对象和引用赋值两步。其中，创建对象需要为对象分配空间，再进行初始化。以上三步，分配内存永远是第一步，但是后面两步则可能被重排序。</p>
-<p>JVM并不保证初始化先于引用赋值的顺序，因此很可能是先创建了对象，即在Singleton实例分配了内存空间，但是还未进行初始化，然后赋值给了<code>instance</code>，这是实例虽然分配到了空间，但是其并未完成初始化，而<code>instance</code>引用却不为空，这时另一个线程抢占执行，执行了<code>getInstance（）</code>方法，便会发现<code>instance</code>不为<code>null</code>，从而直接返回了<code>instance</code>，导致系统出错。</p>
-<h4>正确的双重锁检查</h4>
-<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">volatile</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            <span class="token keyword">synchronized</span><span class="token punctuation">(</span><span class="token class-name">Singleton</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-                <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-                    instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token punctuation">}</span>
-            <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">return</span> instance<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre></div><p>利用volatile的内存可见性可以使得<code>instance</code>不会被线程缓存，所有的线程读写该对象都需要对主内存进行操作。</p>
-<p>volatile还可以防止指令重排序，从而使得上述的双重锁检查代码正确执行。这里的防止指令重排序是指，volatile修饰的<code>instance</code>对象，在执行代码 <code>instance = new Singleton()</code>时不会再被JVM进行指令重排序，会按照 <code>内存分配 -&gt; 初始化 -&gt; 引用赋值</code> 的顺序执行</p>
-<h4>使用静态内部类</h4>
-<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
-    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">SingletonFactory</span> <span class="token punctuation">{</span>
-        <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token class-name">SingletonFactory</span><span class="token punctuation">.</span>instance<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment">//序列化方法  可忽略</span>
-    <span class="token keyword">public</span> <span class="token class-name">Object</span> <span class="token function">readResolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre></div><p>这样的写法利用了JVM的类加载机制，JVM在加载类的过程中确保了线程互斥，是线程安全的。外部类被加载时，不会立即加载内部类，从而<code>instance</code>不会立即被实例化。当<code>getInstance()</code> 第一次被调用时，内部类第一次被引用，从而加载了内部类，并完成了<code>instance</code>的实例化，而JVM的类加载机制确保了实例化instance的过程中的线程安全性。</p>
-<p>缺点：使用静态内部类的方式，则存在传参的问题，外部无法传递参数给内部类</p>
-<h4>使用枚举</h4>
-<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">enum</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
-    <span class="token constant">INSTANCE</span><span class="token punctuation">;</span>
-    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>  <span class="token comment">//其他方法代码</span>
-<span class="token punctuation">}</span>
-</code></pre></div><p>枚举类型的实例创建出来天然就是单例的，并且是线程安全的。</p>
-]]></content:encoded>
-    </item>
-    <item>
-      <title>【操作系统】关于死锁的一点笔记</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/java/deadlock.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/java/deadlock.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【操作系统】关于死锁的一点笔记</source>
+      <title>关于死锁的一点笔记</title>
+      <link>https://shzyjbr.github.com/person-database/person-database/operating-system/deadlock.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/operating-system/deadlock.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于死锁的一点笔记</source>
       <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 声明：以下内容均来自书籍《现代操作系统》，内容略有改动。 1.资源 死锁的产生与资源相关，因而先给出资源的定义：在进程对设备、文件等取得排他性访问权时，有可能会出现死锁，为便于讨论，把这类需要排他性使用的对象称为资源（resource）。资源可以是硬件设备（如...</description>
       <pubDate>Wed, 05 Apr 2023 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[<div class="hint-container tip">
@@ -854,10 +204,664 @@ $$
 ]]></content:encoded>
     </item>
     <item>
-      <title>【后端开发】项目日志建设之流水日志和程序日志的区分</title>
+      <title>浅谈单例模式</title>
+      <link>https://shzyjbr.github.com/person-database/person-database/pattern-design/about-singleton-pattern.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/pattern-design/about-singleton-pattern.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">浅谈单例模式</source>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 浅谈单例模式 饿汉模式 缺点：在需要初始化许多对象的时候会导致系统启动较慢，比如在有许多个单例对象的容器中，启动该容器的初始过程会比较长。 懒加载模式 缺点：同步方法锁住了对象，降低了系统的处理速度。 错误的双重锁检查 这样的写法是有问题的。在JVM中， in...</description>
+      <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<h1>浅谈单例模式</h1>
+<h4>饿汉模式</h4>
+<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> <span class="token function">newInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> instance<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>缺点：在需要初始化许多对象的时候会导致系统启动较慢，比如在有许多个单例对象的容器中，启动该容器的初始过程会比较长。</p>
+<h4>懒加载模式</h4>
+<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    
+    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+    
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">synchronized</span> <span class="token class-name">Singleton</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> instance<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>缺点：同步方法锁住了对象，降低了系统的处理速度。</p>
+<h4>错误的双重锁检查</h4>
+<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">synchronized</span><span class="token punctuation">(</span><span class="token class-name">Singleton</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> instance<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>这样的写法是有问题的。在JVM中， instance = new Singleton(); 语句并不是一个原子操作，分为创建对象和引用赋值两步。其中，创建对象需要为对象分配空间，再进行初始化。以上三步，分配内存永远是第一步，但是后面两步则可能被重排序。</p>
+<p>JVM并不保证初始化先于引用赋值的顺序，因此很可能是先创建了对象，即在Singleton实例分配了内存空间，但是还未进行初始化，然后赋值给了<code>instance</code>，这是实例虽然分配到了空间，但是其并未完成初始化，而<code>instance</code>引用却不为空，这时另一个线程抢占执行，执行了<code>getInstance（）</code>方法，便会发现<code>instance</code>不为<code>null</code>，从而直接返回了<code>instance</code>，导致系统出错。</p>
+<h4>正确的双重锁检查</h4>
+<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">volatile</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">synchronized</span><span class="token punctuation">(</span><span class="token class-name">Singleton</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span>instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> instance<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>利用volatile的内存可见性可以使得<code>instance</code>不会被线程缓存，所有的线程读写该对象都需要对主内存进行操作。</p>
+<p>volatile还可以防止指令重排序，从而使得上述的双重锁检查代码正确执行。这里的防止指令重排序是指，volatile修饰的<code>instance</code>对象，在执行代码 <code>instance = new Singleton()</code>时不会再被JVM进行指令重排序，会按照 <code>内存分配 -&gt; 初始化 -&gt; 引用赋值</code> 的顺序执行</p>
+<h4>使用静态内部类</h4>
+<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">SingletonFactory</span> <span class="token punctuation">{</span>
+        <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> instance <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">Singleton</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token class-name">SingletonFactory</span><span class="token punctuation">.</span>instance<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">//序列化方法  可忽略</span>
+    <span class="token keyword">public</span> <span class="token class-name">Object</span> <span class="token function">readResolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>这样的写法利用了JVM的类加载机制，JVM在加载类的过程中确保了线程互斥，是线程安全的。外部类被加载时，不会立即加载内部类，从而<code>instance</code>不会立即被实例化。当<code>getInstance()</code> 第一次被调用时，内部类第一次被引用，从而加载了内部类，并完成了<code>instance</code>的实例化，而JVM的类加载机制确保了实例化instance的过程中的线程安全性。</p>
+<p>缺点：使用静态内部类的方式，则存在传参的问题，外部无法传递参数给内部类</p>
+<h4>使用枚举</h4>
+<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">enum</span> <span class="token class-name">Singleton</span> <span class="token punctuation">{</span>
+    <span class="token constant">INSTANCE</span><span class="token punctuation">;</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>  <span class="token comment">//其他方法代码</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>枚举类型的实例创建出来天然就是单例的，并且是线程安全的。</p>
+]]></content:encoded>
+    </item>
+    <item>
+      <title>Redis学习笔记之链表</title>
+      <link>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-list.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-list.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">Redis学习笔记之链表</source>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的Redis-3.0-annotated版本 一、Redis中的链表应用场景 链表是一种应用非常广泛的数据结...</description>
+      <category>中间件</category>
+      <pubDate>Sat, 14 Oct 2023 00:00:00 GMT</pubDate>
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<blockquote>
+<p>本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的<a href="https://github.com/huangz1990/redis-3.0-annotated" target="_blank" rel="noopener noreferrer">Redis-3.0-annotated</a>版本</p>
+</blockquote>
+<h2>一、Redis中的链表应用场景</h2>
+<p>链表是一种应用非常广泛的数据结构，在很多语言中都有相应的实现和使用，比如Java中的LinkedList。C语言中并没有内置的链表实现，因此Redis实现了自己的链表结构，并将它应用在许多场景，比如我们在Redis中使用的list，其底层就是用链表实现的。</p>
+<p>Redis中的list是由字符串值组成的双向链表，其基本用法如下：</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>127.0.0.1:6379&gt; lpush fruits apple banana orange
+(integer) 3
+127.0.0.1:6379&gt;
+</code></pre></div><p>Redis中的list支持从两边对链表进行操作，其主要使用的命令有LPUSH，RPUSH，LPOP，RPOP。</p>
+<p>利用这些命令，可以把list作为队列或者栈来使用。</p>
+<p>比如组合使用LPUSH和RPOP，即左进右出，那么可以模拟成<strong>队列</strong>。当然也可以反过来，RPUSH和LPOP，即右进左出。比如像下面这样使用：</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>127.0.0.1:6379&gt; lpush fruits apple banana orange
+(integer) 3
+127.0.0.1:6379&gt; rpop fruits
+"apple"
+</code></pre></div><h2>二、Redis的链表实现</h2>
+<p>Redis中的链表实现与常见的链表差不多，基本结构有listNode和list。listNode是链表节点结构，list是链表结构。listNode的基本结构如下：</p>
+<div class="language-c" data-ext="c" data-title="c"><pre class="language-c"><code><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">listNode</span> <span class="token punctuation">{</span>
+
+    <span class="token comment">// 前置节点</span>
+    <span class="token keyword">struct</span> <span class="token class-name">listNode</span> <span class="token operator">*</span>prev<span class="token punctuation">;</span>
+    <span class="token comment">// 后置节点</span>
+    <span class="token keyword">struct</span> <span class="token class-name">listNode</span> <span class="token operator">*</span>next<span class="token punctuation">;</span>
+    <span class="token comment">// 节点的值</span>
+    <span class="token keyword">void</span> <span class="token operator">*</span>value<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span> listNode<span class="token punctuation">;</span>
+</code></pre></div><p>next指针作为前向指针，可以沿着表头到表尾的方向进行遍历；prev指针作为后向指针，可以沿着表尾到表头的方向进行遍历；value是一个值指针。</p>
+<p>使用listNode组成的双向链表结构如下所示:</p>
+<figure><img src="http://zzk31.320.io/img/20230521171907.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<p>list的结构如下所示：</p>
+<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>typedef struct list {
+
+    // 头节点
+    listNode *head;
+    // 尾节点
+    listNode *tail;
+    // 链表长度，即链表所包含的节点数
+    unsigned long len;
+    // 节点值复制函数
+    void *(*dup)(void *ptr);
+    // 节点值释放函数
+    void (*free)(void *ptr);
+    // 节点值对比函数
+    int (*match)(void *ptr, void *key);
+
+} list;
+</code></pre></div><p>通过list 结构可以很方便地取到链表的头节点、尾节点以及链表长度。dup 、 free 和 match 属性是用于实现多态链表所需的类型特定函数，具体地，dup 函数用于复制链表节点所保存的值；free 函数用于释放链表节点所保存的值；match 函数则用于对比链表节点所保存的值和另一个输入值是否相等。使用list之后的链表结构如下：</p>
+<figure><img src="http://zzk31.320.io/img/20230521172758.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<p>Redis 的链表实现的特性可以总结如下：</p>
+<ul>
+<li>双端： listNode有 prev 和 next 指针， 可以以$O(1)$的时间复杂度获取某个节点的前置节点和后置节点</li>
+<li>无环： 表头节点的 prev 指针和表尾节点的 next 指针都为 NULL ， 对链表的访问以 NULL 为终点</li>
+<li>带表头指针和表尾指针： 通过 list的 head 指针和 tail 指针可以很容易获取表头结点和表尾节点</li>
+<li>$O(1)$时间复杂度获取链表长度：list 的len 属性来记录了链表节点</li>
+<li>多态： listNode使用 void* 指针来保存节点值， 并且可以通过 list 的 dup 、free 、match 三个属性为节点值设置类型特定函数， 所以链表可以用于保存各种不同类型的值并且应用不同的复制函数、内存释放函数和匹配函数。</li>
+</ul>
+<h2>三、list中一些函数的源码实现</h2>
+<ol>
+<li>将元素插入到list表头，如下图所示，向表头插入val0之后list的变化，红色的相关指针是发生变化的指针。</li>
+</ol>
+<figure><img src="http://zzk31.320.io/img/20230521230420.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>/*
+ * 使用给定的value值构造新的节点并添加到链表的表头
+ * 如果为新节点分配内存出错，那么不执行任何动作，仅返回 NULL
+ * 如果执行成功，返回传入的链表指针
+ * T = O(1)
+ */
+list *listAddNodeHead(list *list, void *value)
+{
+    listNode *node;
+
+    // 为节点分配内存
+    if ((node = zmalloc(sizeof(*node))) == NULL)
+        return NULL;
+
+    // 保存值指针
+    node-&gt;value = value;
+
+    // 添加节点到空链表
+    // 当链表为空时，新插入的节点既是头结点也是尾结点
+    if (list-&gt;len == 0) {
+        list-&gt;head = list-&gt;tail = node;
+        // 注意头结点的前驱指针应该为空，尾结点的后继指针应该为空
+        node-&gt;prev = node-&gt;next = NULL;
+    // 添加节点到非空链表
+    // 当链表非空时,采用头插法将新插入节点链接到链表头部,并更新list的head指针
+    } else {
+        node-&gt;prev = NULL; //注意头结点的前驱指针应该为空
+        node-&gt;next = list-&gt;head;
+        list-&gt;head-&gt;prev = node;
+        list-&gt;head = node;
+    }
+
+    // 更新链表节点数
+    list-&gt;len++;
+
+    return list;
+}
+</code></pre></div><ol start="2">
+<li>将元素插入到list表尾，如下图所示，想表尾插入val5之后list的变化，红色的相关指针是发生变化的指针。</li>
+</ol>
+<figure><img src="http://zzk31.320.io/img/20230521230452.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>/*
+ * 使用给定的value值构造新的节点并添加到链表的表尾
+ * 如果为新节点分配内存出错，那么不执行任何动作，仅返回 NULL
+ * 如果执行成功，返回传入的链表指针
+ * T = O(1)
+ */
+list *listAddNodeTail(list *list, void *value)
+{
+    listNode *node;
+
+    // 为新节点分配内存
+    if ((node = zmalloc(sizeof(*node))) == NULL)
+        return NULL;
+
+    // 保存值指针
+    node-&gt;value = value;
+
+    // 目标链表为空
+    // 当链表为空时，新插入的节点既是头结点也是尾结点
+    if (list-&gt;len == 0) {
+        list-&gt;head = list-&gt;tail = node;
+        // 注意头结点的前驱指针应该为空，尾结点的后继指针应该为空
+        node-&gt;prev = node-&gt;next = NULL;
+    // 目标链表非空
+    } else {
+        node-&gt;prev = list-&gt;tail;
+        node-&gt;next = NULL;
+        list-&gt;tail-&gt;next = node;
+        list-&gt;tail = node;
+    }
+
+    // 更新链表节点数
+    list-&gt;len++;
+
+    return list;
+}
+</code></pre></div><ol start="3">
+<li>创建list，如下图所示，其中NULL指针没有画出：</li>
+</ol>
+<figure><img src="http://zzk31.320.io/img/20230521230555.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>/*
+ * 创建一个新的链表
+ * 创建成功返回链表，失败返回 NULL 。
+ * T = O(1)
+ */
+list *listCreate(void)
+{
+    struct list *list;
+
+    // 分配内存
+    if ((list = zmalloc(sizeof(*list))) == NULL)
+        return NULL;
+
+    // 初始化各项属性
+    list-&gt;head = list-&gt;tail = NULL;
+    list-&gt;len = 0;
+    list-&gt;dup = NULL;
+    list-&gt;free = NULL;
+    list-&gt;match = NULL;
+
+    return list;
+}
+</code></pre></div>]]></content:encoded>
+      <enclosure url="http://zzk31.320.io/img/20230521171907.png" type="image/png"/>
+    </item>
+    <item>
+      <title>Redis学习笔记之字符串</title>
+      <link>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-string.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-string.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">Redis学习笔记之字符串</source>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的Redis-3.0-annotated版本 一、SDS基本概念介绍 Redis有五种基础数据结构，分别是s...</description>
+      <category>中间件</category>
+      <pubDate>Thu, 12 Oct 2023 00:00:00 GMT</pubDate>
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<blockquote>
+<p>本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的<a href="https://github.com/huangz1990/redis-3.0-annotated" target="_blank" rel="noopener noreferrer">Redis-3.0-annotated</a>版本</p>
+</blockquote>
+<h2>一、SDS基本概念介绍</h2>
+<p>Redis有五种基础数据结构，分别是string（字符串）、list（列表）、hash（字典）、set（集合）以及zset（也叫做sorted set，有序集合）。其中，Redis中的字符串采用了一种名为简单动态字符串的类型（simple dynamic string, SDS），而不是C字符串（具体原因后续会解释）。在Redis中，C字符串仅作为字符串字面量，即类似<code>"Hello, world"</code>，而在需要使用可修改的字符串的地方，均采用SDS来表示字符串。</p>
+<p>当客户端执行命令：</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>redis&gt; SET name zzk
+OK
+</code></pre></div><p>Redis将在数据库中创建一个新的键值对。其中，键值对的key是一个SDS对象，其中包含着字符串"name"；value是一个SDS对象，内部包含着字符串“zzk”。</p>
+<p>又如，当客户端执行如下命令：</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>redis&gt; LPUSH classmates xiaoming xiaohong xiaobai
+</code></pre></div><p>Redis将在数据库中创建一个键值对，其中，key是一个包含着字符串"classmates"的SDS对象，value是一个list对象。这个list对象有三个元素，每个元素都是一个SDS对象，第一个SDS对象包含字符串"xiaoming"，第二个SDS对象包含字符串"xiaohong"等。</p>
+<p>从上述例子可以看出，SDS作为Redis的字符串实现，被频繁用在各种使用场景。</p>
+<h2>二、为什么使用SDS而不是C字符串？</h2>
+<blockquote>
+<p>以下涉及的Redis代码来自Redis3.0，虽然Redis目前已经更新到7.0，但是数据结构的实现原理是一脉相承的，3.0版本的代码更加简单，有助于原理的理解。</p>
+</blockquote>
+<p>SDS的结构定义如下：</p>
+<div class="language-C" data-ext="C" data-title="C"><pre class="language-C"><code>struct sdshdr {
+
+    int len;
+    
+    int free;
+    
+    char buf[];
+
+};
+</code></pre></div><p>其中，buf是一个字符数组，用于保存字符串；len用于记录buf数组中已使用字节的数量，也就是SDS所保存的字符串的长度；free用于记录buf数组中未使用字节的数量。</p>
+<p>下图表示一个包含字符串“zzk”的SDS对象。</p>
+<figure><img src="http://zzk31.320.io/img/20230521135841.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<p>在这个SDS对象中，buf是一个char数组，其数组内容为:'z'，'z'，'k'和末尾的'\0'。free为0表示没有多余的字节可供使用，len为3表示这个SDS的字符串长度为3（与C字符串长度定义一样，不包括末尾的'\0'）</p>
+<p>下图展示了另一个SDS对象的内部结构：</p>
+<figure><img src="http://zzk31.320.io/img/20230521135902.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<p>在这个SDS对象中，buf数组的内容为"sea"(末尾还有个'\0')，len为3表示这个SDS的字符串长度为3，而free为3表示这个buf数组还有3个字节未被使用。</p>
+<h3>1. 常数时间获取字符串长度</h3>
+<p>从上述两个例子可以看出，buf数组的实际大小并不总是等于（字符串长度+1）。</p>
+<p>而在C语言中，一个C字符串例子如下：</p>
+<figure><img src="http://zzk31.320.io/img/20230521135922.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<p>可以看出，C字符串并不包含长度信息，当需要获取字符串长度信息时，需要遍历一遍字符串才能计算出其长度，时间复杂度为$O(n) $,n为字符串长度。（题外话：strlen()是求C字符串长度函数，有时候编程不注意，还可能将strlen()写到循环判断条件中，造成复杂度提升一个量级）</p>
+<p>因此，追求效率的Redis并没有直接采用C字符串作为字符串实现，而是使用了len来记录当前使用的字符大小，从而将时间复杂度降低到$O(1)$。</p>
+<h3>2. 防止缓冲区溢出</h3>
+<p>如果使用不当，C字符串还可能带来缓冲区溢出的问题。</p>
+<p>假设如下情况，有两个C字符串s1和s2，他们的空间分配位置如下，s2紧挨在s1后面。</p>
+<figure><img src="http://zzk31.320.io/img/20230521140010.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<p>若直接调用C函数strcat(s1, ",Lucy")，企图将s1的内容修改为"Hey,Lucy"，这样做确实能达到目的。然而，这种方式是错误的，正确的方式应该是在调用strcat()之前为s1分配足够的空间，而不是不经检查地直接调用。因为这种方式会导致s2被覆盖，称之为缓冲区溢出现象，如下图所示：</p>
+<figure><img src="http://zzk31.320.io/img/20230521135953.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<p>而SDS的设计则避免了这一情况。当需要对SDS进行扩充时，SDS中的free属性使得SDS的API很容易检查SDS的剩余空间是否满足修改的需要，如果不满足的话，会为SDS分配一个新的容量足够的buf数组，再去执行修改操作。因此，SDS的使用者不需要手动修改SDS空间大小，也不用担心出现缓冲区溢出问题。</p>
+<h3>3. 提高内存重分配效率</h3>
+<p>如前所述，C字符串本身并不保存自身的长度信息，而是通过在字符串末尾添加一个'\0'来标识字符串结束。因此，对于一个包含了 N 个字符的 C 字符串来说， 这个 C 字符串的底层实现总是一个 N+1 个字符长的数组（额外的一个字符用于保存'\0'字符）。</p>
+<p>这种关联性使得对C字符串的增加或者删除字符操作总是伴随着内存重分配操作。</p>
+<p>仍以C字符串的拼接场景为例，若要在值为“hello”的字符串s1后面拼接上“,world”，那么在调用<code>strcat(s1,",world");</code>操作之前，需要先为s1分配足够大的空间，否则就会发生缓冲区溢出。</p>
+<p>若之后我们想在s1之后在拼接上"!!!"，那么在调用<code>strcat(s1,"!!!");</code>操作之前又需要为s1分配空间。</p>
+<p>这种频繁分配空间的方式会带来性能开销，而Redis作为高性能的缓冲中间件，若是采用这种方式则必然对性能造成影响。</p>
+<p>因此，SDS采用了空间预分配方式来解决这一问题。在 SDS 中， buf 数组的长度不一定就是实际存储的字符数量加一， 数组里面可以包含未使用的字节， 而SDS 的 free 属性记录了这些字节的数量 。</p>
+<h3>4.SDS的空间预分配策略</h3>
+<p>空间预分配策略用于优化 SDS 的字符串增长操作： 当 SDS 的 API 对一个 SDS 进行修改， 并且需要对 SDS 进行空间扩展的时候， 程序不仅会为 SDS 分配修改所必须要的空间， 还会为 SDS 分配额外的未使用空间。</p>
+<p>其中， 额外分配的未使用空间数量由以下规则决定：</p>
+<ul>
+<li>如果对 SDS 进行修改之后， SDS 的长度 len 小于 1 MB ， 那么程序分配和 len 属性同样大小的未使用空间， 这时 SDS len 属性的值和 free 属性的值相同。 举个例子， 如果进行修改之后， SDS 的 len 将变成 10 字节， 那么程序也会分配13 字节的未使用空间， SDS 的 buf 数组的实际长度将变成 10+ 10 + 1 = 21 字节（额外的一字节用于保存'\0'字符）</li>
+<li>如果对 SDS 进行修改之后， SDS 的长度将大于等于 1 MB ， 那么程序会分配 1 MB 的未使用空间。 举个例子， 如果进行修改之后， SDS 的 len 将变成 10 MB ， 那么程序会分配 1 MB 的未使用空间， SDS 的 buf 数组的实际长度将为 10 MB + 1 MB + 1 byte 。</li>
+</ul>
+<p>第一条规则简单地说就是成倍增长规则，只不过这个基数是修改之后的长度。第二条规则是因为Redis需要在性能和效率之间取舍，如果达到了1MB的级别还是采用成倍增长规则，那么SDS的增长速度很快导致大量的内存空间占用。</p>
+<p>通过这种预分配策略， SDS 将连续增长 N 次字符串所需的内存重分配次数从必定 N 次降低为最多 N 次。</p>
+<p><strong>此外，SDS还采用了惰性空间释放方式。</strong></p>
+<p>所谓惰性空间释放是指， 当 SDS 的 API 需要缩短 SDS 保存的字符串时， 程序并不立即使用内存重分配来回收缩短后多出来的字节， 而是使用 free 属性将这些字节的数量记录起来， 并等待将来使用。也就是说，惰性空间释放用于优化 SDS 的字符串缩短操作。</p>
+<p>例如， sdstrim 函数接受一个 SDS 和一个 C字符串作为参数， 从 SDS 左右两端分别移除所有在 C字符串中出现过的字符。</p>
+<p>执行<code>sdstrim(s, "AA..");</code>后SDS的结构变化如下图所示：</p>
+<figure><img src="http://zzk31.320.io/img/20230521140039.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<p>可以看到，并没有回收三个'A'字符所占的空间，而是使用free记录了剩余空间。</p>
+<p>当在下一次对SDS进行修改操作，比如调用<code>strcat(s, "zzk")</code>时，不必在进行内存重分配，因为有足够的剩余空间支持拼接操作，结果如下所示：</p>
+<figure><img src="http://zzk31.320.io/img/20230521134208.png" alt="" tabindex="0" loading="lazy"><figcaption></figcaption></figure>
+<h3>5.二进制安全</h3>
+<p>此外，在C字符串中，由于只使用'\0'来表示字符串结束，因此，一个字符串里面不能包含空字符，否则就会被认为是字符串结尾。这就使得C字符串只能存储文本数据，而不能存储二进制数据如图片、视频等。</p>
+<p>而Redis的SDS则可以用来存储二进制数据，SDS不靠空字符来标识存储内容的结束，而是通过len来标识。buf[]数组是一个char数据，可以直接用于存储二进制数据（只需要定义好编解码格式即可进行读写）。</p>
+<p>当然，另一方面，SDS也会在字符串末尾添加'\0'，因此SDS也可以复用部分C字符串函数。</p>
+]]></content:encoded>
+      <enclosure url="http://zzk31.320.io/img/20230521135841.png" type="image/png"/>
+    </item>
+    <item>
+      <title>hexo搭建个人博客+NexT主题</title>
+      <link>https://shzyjbr.github.com/person-database/person-database/blog/hexo-next.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/blog/hexo-next.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">hexo搭建个人博客+NexT主题</source>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 1 hexo简介 Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，生成静态网页。 --Hexo官网 2 hexo安装 安装hexo需要先安装node.js和Git 2.1 安装node.js Node.j...</description>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 GMT</pubDate>
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<h3>1 hexo简介</h3>
+<blockquote>
+<p>Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 <a href="http://daringfireball.net/projects/markdown/" target="_blank" rel="noopener noreferrer">Markdown</a>（或其他渲染引擎）解析文章，生成静态网页。   --<a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener noreferrer">Hexo</a>官网</p>
+</blockquote>
+<h3>2 hexo安装</h3>
+<p>安装hexo需要先安装node.js和Git</p>
+<h4>2.1 安装node.js</h4>
+<blockquote>
+<p>Node.js 版本需不低于 10.13，建议使用 Node.js 12.0 及以上版本</p>
+</blockquote>
+<p>通过node.js官网下载安装版进行安装，选择14.15.1长期支持版 官网：<a href="https://nodejs.org/zh-cn/" target="_blank" rel="noopener noreferrer">Node.js</a></p>
+<figure><img src="https://i.loli.net/2020/11/27/Eym3zR8bX1FpcxT.png" alt="image-20201127135412872.png" tabindex="0" loading="lazy"><figcaption>image-20201127135412872.png</figcaption></figure>
+<p>安装过程与普通软件安装没有差别，一路next。</p>
+<h4>2.2 安装Git</h4>
+<p>通过Git官网下载Git安装版进行安装，安装版本2.29.2 官网：<a href="https://git-scm.com/" target="_blank" rel="noopener noreferrer">Git (git-scm.com)</a></p>
+<figure><img src="https://i.loli.net/2020/11/27/Dew6M4naP5Aucby.png" alt="git.png" tabindex="0" loading="lazy"><figcaption>git.png</figcaption></figure>
+<h4>2.3 正式安装hexo</h4>
+<p>安装好node.js和Git之后就可以开始进行hexo的安装</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>npm install -g hexo-cli
+</code></pre></div><p>安装成功之后可以在cmd命令行中输入hexo，查看是否安装成功</p>
+<figure><img src="https://i.loli.net/2020/11/27/P4Mktm3IlERVxoC.png" alt="image-20201127140007483" tabindex="0" loading="lazy"><figcaption>image-20201127140007483</figcaption></figure>
+<p>出现如下提示则表示安装成功。</p>
+<h3>3 使用hexo搭建博客</h3>
+<h4>3.1 初始化</h4>
+<p>在Windows中创建一个文件夹，作为想要搭建的博客的根目录，比如我的就是 D:\blog\hexo</p>
+<p><strong>在cmd中进入根目录下</strong>，使用如下命令初始化，该命令会在根目录下创建hexo所需的文件</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>hexo init
+</code></pre></div><p>创建完成之后的目录如下所示：</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>.
+├── _config.yml
+├── package.json
+├── scaffolds
+├── source
+|   ├── _drafts
+|   └── _posts
+└── themes
+</code></pre></div><p>其中_config.yml称为站点配置文件，对应的，themes/_config.yml称为主题配置文件。
+简单解释下两个配置文件。根目录下的_config.yml是对整个博客站点的内容进行设置。hexo的博客可以指定多种主题，主题的配置是通过themes/_config.yml进行设置的。</p>
+<h4>3.2 启动hexo</h4>
+<p>使用如下命令可以启动hexo，进行快速效果预览。</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>hexo server
+</code></pre></div><p>可以看到出现如下提示：</p>
+<p><img src="https://i.loli.net/2020/11/27/qUmerCBi3Wcf6aF.png" alt="image-20201127141157314.png" loading="lazy">)</p>
+<p>浏览器访问localhost:4000可以看到博客搭建成功。</p>
+<figure><img src="https://i.loli.net/2020/11/27/w5hLyImDjSJio1k.png" alt="image-20201127141428928.png" tabindex="0" loading="lazy"><figcaption>image-20201127141428928.png</figcaption></figure>
+<h3>4. 使用NexT主题</h3>
+<p>hexo可以通过指定不同的主题，达到更换博客风格的目的。hexo的主题可以访问<a href="https://hexo.io/themes/" target="_blank" rel="noopener noreferrer">Themes | Hexo</a></p>
+<p>本次选用Text主题。</p>
+<h4>4.1 下载NexT主题</h4>
+<p>我们通过Git来下载。</p>
+<p><strong>在cmd目录下进入根目录</strong>，使用如下命令。</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>git clone https://github.com/iissnan/hexo-theme-next themes/next
+</code></pre></div><p>下载完毕后可以看到themes目录下多了一个next文件夹</p>
+<p><em>hexo把所有的主题都放在了themes文件夹里面，所以通常的做法就是把想要使用的主题放到在themes目录下面，之后去站点配置文件里面进行主题的设置。</em></p>
+<h4>4.2 设置站点配置文件，进行主题更换</h4>
+<p>打开站点配置文件_config.yml,  可以使用查找功能定位到themes关键字，修改为如下：</p>
+<div class="language-text" data-ext="text" data-title="text"><pre class="language-text"><code>theme: next
+</code></pre></div><h4>4.3 启动博客进行验证</h4>
+<p>输入<code>hexo server</code>启动博客，可以看到主题已经更换为NexT主题。</p>
+<p><em>下图的NexT主题经过了其他设置，所以你的主题可能和我看起来有点不一样</em></p>
+<figure><img src="https://i.loli.net/2020/11/27/TO42oeM7bp8xQ6y.png" alt="image-20201127145135433.png" tabindex="0" loading="lazy"><figcaption>image-20201127145135433.png</figcaption></figure>
+]]></content:encoded>
+      <enclosure url="https://i.loli.net/2020/11/27/Eym3zR8bX1FpcxT.png" type="image/png"/>
+    </item>
+    <item>
+      <title>logback自定义日志格式，以json格式为例</title>
+      <link>https://shzyjbr.github.com/person-database/person-database/java/logback-custom-log-formattion.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/java/logback-custom-log-formattion.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">logback自定义日志格式，以json格式为例</source>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 【后端开发】logback自定义日志格式，以json格式为例 一、背景 在项目开发中，我们有时候会遇到需要指定日志格式的场景，比如项目的日志接入了在线日志收集系统，该收集系统要求日志需要满足其指定的日志格式才会被收集。 接下来，我就以打印json格式的日志为例...</description>
+      <pubDate>Tue, 12 Mar 2024 00:00:00 GMT</pubDate>
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<h1>【后端开发】logback自定义日志格式，以json格式为例</h1>
+<h2>一、背景</h2>
+<p>在项目开发中，我们有时候会遇到需要指定日志格式的场景，比如项目的日志接入了在线日志收集系统，该收集系统要求日志需要满足其指定的日志格式才会被收集。</p>
+<p>接下来，我就以打印json格式的日志为例，向各位分享两种方案。</p>
+<h2>二、方案</h2>
+<h3>2.1 方案1</h3>
+<p>通过指定encoder的具体类为net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder类，在pattern中可以打印指定格式的日志。</p>
+<p>pattern中的变量格式有三类。一类是logback自定义的诸如%level等，一类是如${app_name}这样我们定义在logback.xml中的properties。还有一类形如%X{variable_name}是通过在代码中设置进MDC变量的，关于MDC的使用本文就不展开了，感兴趣请自行搜索。</p>
+<p>直接show出可用的logback配置代码，下面是一个appender的示例代码</p>
+<div class="language-xml" data-ext="xml" data-title="xml"><pre class="language-xml"><code>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>your-appender-name<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.RollingFileAppender<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>File</span><span class="token punctuation">&gt;</span></span>${log_path}/${app_name}-${currentTime}.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>File</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>append</span><span class="token punctuation">&gt;</span></span>true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>append</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.classic.filter.LevelFilter<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>level</span><span class="token punctuation">&gt;</span></span>INFO<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>level</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>onMatch</span><span class="token punctuation">&gt;</span></span>ACCEPT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>onMatch</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>onMismatch</span><span class="token punctuation">&gt;</span></span>DENY<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>onMismatch</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rollingPolicy</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>${log_path}/${app_name}-%d{yyyyMMdd}-%i.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxHistory</span><span class="token punctuation">&gt;</span></span>${logback.file.maxHistory}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxHistory</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>${logback.file.maxFileSize}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>totalSizeCap</span><span class="token punctuation">&gt;</span></span>${logback.file.totalSizeCap}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>totalSizeCap</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rollingPolicy</span><span class="token punctuation">&gt;</span></span>
+        
+        <span class="token comment">&lt;!-- 打印json格式，请重点看这里--&gt;</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>encoder</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>providers</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pattern</span><span class="token punctuation">&gt;</span></span>
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pattern</span><span class="token punctuation">&gt;</span></span>
+                         <span class="token comment">&lt;!--下面定义出一个json格式的消息，仅做示例--&gt;</span>
+                        <span class="token comment">&lt;!--具体的信息格式请根据你的需求而定--&gt;</span>
+                        {
+                        "app_name": "${app_name}_info",
+                        "level": "%level",
+                        "log_time": "%date{\"yyyy-MM-dd HH:mm:ss.SSS\"}",
+                        <span class="token comment">&lt;!--   "logger": "%logger",  %logger打印logger名字， %class打印具体类名--&gt;</span>
+                        "logger": "%class",
+                        "transaction_id": "%X{transaction_id}",
+                        "address": "%X{address}",
+                        "response_headers": "%X{response_headers}",
+                        "response_payload": "%X{response_payload}",
+                        "response_code": "%X{response_code}"
+                        }
+                    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pattern</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pattern</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>providers</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>encoder</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">&gt;</span></span>
+
+</code></pre></div><h3>2.2 方案2</h3>
+<p>另一种打印自定义格式的方法则是通过代码处理。</p>
+<ol>
+<li>首先，继承<code>ch.qos.logback.core.LayoutBase&lt;ILoggingEvent&gt;</code>，并重写doLayout(ILoggingEvent event)方法</li>
+</ol>
+<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token annotation punctuation">@Data</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProgramLayout</span> <span class="token keyword">extends</span> <span class="token class-name">LayoutBase</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ILoggingEvent</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">{</span>
+    <span class="token comment">// 也可以自定义参数，后续可以在logback.xml中传入</span>
+    <span class="token keyword">protected</span> <span class="token class-name">String</span> appName<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">ProgramLayout</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token doc-comment comment">/**
+     * 覆盖该方法，可以定制需要的日志格式
+     * <span class="token keyword">@param</span> <span class="token parameter">event</span> The event to format
+     * <span class="token keyword">@return</span>
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">doLayout</span><span class="token punctuation">(</span><span class="token class-name">ILoggingEvent</span> event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">ProgramLogParam</span> params <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ProgramLogParam</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        params<span class="token punctuation">.</span><span class="token function">setApp_name</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>appName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        params<span class="token punctuation">.</span><span class="token function">setLevel</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getLevel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        params<span class="token punctuation">.</span><span class="token function">setLogger</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getLoggerName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        params<span class="token punctuation">.</span><span class="token function">setLog_time</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Timestamp</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getTimeStamp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        params<span class="token punctuation">.</span><span class="token function">setTransaction_id</span><span class="token punctuation">(</span><span class="token class-name">MDCUtil</span><span class="token punctuation">.</span><span class="token function">getTransactionId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 通过event.getFormattedMessage()就可以获取到源消息</span>
+        <span class="token class-name">String</span> message <span class="token operator">=</span> event<span class="token punctuation">.</span><span class="token function">getFormattedMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getThrowableProxy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">ExtendedThrowableProxyConverter</span> throwableConverter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ExtendedThrowableProxyConverter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            throwableConverter<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            message <span class="token operator">=</span> event<span class="token punctuation">.</span><span class="token function">getFormattedMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"\n"</span> <span class="token operator">+</span> throwableConverter<span class="token punctuation">.</span><span class="token function">convert</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            throwableConverter<span class="token punctuation">.</span><span class="token function">stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+		<span class="token comment">// 如果打印的源日志消息就包含json格式的字符串，则截取该部分消息作为code_message</span>
+        <span class="token keyword">int</span> beginIndex <span class="token operator">=</span> message<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"{"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> endIndex <span class="token operator">=</span> message<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">"}"</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>beginIndex <span class="token operator">&gt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">String</span> jsonMsg <span class="token operator">=</span> message<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span>beginIndex<span class="token punctuation">,</span> endIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            params<span class="token punctuation">.</span><span class="token function">setCode_message</span><span class="token punctuation">(</span>jsonMsg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            params<span class="token punctuation">.</span><span class="token function">setCode_message</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>params<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token class-name">CoreConstants</span><span class="token punctuation">.</span><span class="token constant">LINE_SEPARATOR</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>ProgramLogParam是个bean，我简单放一下，用了lombok的注解，方便查看</p>
+<div class="language-java" data-ext="java" data-title="java"><pre class="language-java"><code><span class="token annotation punctuation">@Data</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ProgramLogParam</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> app_name<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> level<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> logger<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> log_time<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> code_message<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> transaction_id<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ol start="2">
+<li>在logback.xml在配置encoder的layout为该ProgramLayout，即可达到打印指定日志格式的目的。</li>
+</ol>
+<div class="language-xml" data-ext="xml" data-title="xml"><pre class="language-xml"><code> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>TRANSACTION_INFO_FILE<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.RollingFileAppender<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token comment">&lt;!-- 正在记录的日志文档的路径及文档名 --&gt;</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>file</span><span class="token punctuation">&gt;</span></span>${LOG_HOME}/${APP_NAME}_info-info.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>file</span><span class="token punctuation">&gt;</span></span>
+        <span class="token comment">&lt;!--日志文档输出格式--&gt;</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>encoder</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.encoder.LayoutWrappingEncoder<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>layout</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>com.demo.log.layout.TransactionLayout<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token comment">&lt;!--传入自定义参数--&gt;</span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appName</span><span class="token punctuation">&gt;</span></span>${APP_NAME}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appName</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>layout</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>charset</span><span class="token punctuation">&gt;</span></span>UTF-8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>charset</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>encoder</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rollingPolicy</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.TimeBasedRollingPolicy<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>${LOG_HOME}/${APP_NAME}-%d{yyyy-MM-dd}.%i.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>timeBasedFileNamingAndTriggeringPolicy</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>1024MB<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>timeBasedFileNamingAndTriggeringPolicy</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxHistory</span><span class="token punctuation">&gt;</span></span>2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxHistory</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rollingPolicy</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>filter</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ch.qos.logback.classic.filter.LevelFilter<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>level</span><span class="token punctuation">&gt;</span></span>info<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>level</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>onMatch</span><span class="token punctuation">&gt;</span></span>ACCEPT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>onMatch</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>onMismatch</span><span class="token punctuation">&gt;</span></span>DENY<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>onMismatch</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>filter</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div>]]></content:encoded>
+    </item>
+    <item>
+      <title>zzk的个人知识库</title>
+      <link>https://shzyjbr.github.com/person-database/person-database/home.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/home.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">zzk的个人知识库</source>
+      <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 开发 Redis 操作系统 设计模式 博客</description>
+      <pubDate>Thu, 07 Mar 2024 09:41:42 GMT</pubDate>
+      <content:encoded><![CDATA[<div class="hint-container tip">
+<p class="hint-container-title">拉个Star</p>
+<ul>
+<li>如果<a href="https://github.com/shzyjbr/person-database" target="blank">本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href="https://github.com/shzyjbr/person-database" target="blank">GitHub</a></li>
+</ul>
+</div>
+<h2>开发</h2>
+<ul>
+<li><a href="/person-database/java/dif-between-transactionlog-and-programlog.html" target="_blank">项目日志建设之流水日志和程序日志的区分</a></li>
+<li><a href="/person-database/java/logback-custom-log-formattion.html" target="_blank">logback自定义日志格式，以json格式为例</a></li>
+</ul>
+<h2>Redis</h2>
+<ul>
+<li><a href="/person-database/middleware/redis/redis-learn-string.html" target="_blank">Redis学习笔记之字符串</a></li>
+<li><a href="/person-database/middleware/redis/redis-learn-list.html" target="_blank">Redis学习笔记之链表</a></li>
+</ul>
+<h2>操作系统</h2>
+<ul>
+<li><a href="/person-database/java/deadlock.html" target="_blank">关于死锁的一点笔记</a></li>
+</ul>
+<h2>设计模式</h2>
+<ul>
+<li><a href="/person-database/java/about-singleton-pattern.html" target="_blank">浅谈单例模式</a></li>
+</ul>
+<h2>博客</h2>
+<ul>
+<li><a href="/person-database/blog/hexo-next.html" target="_blank">hexo搭建个人博客+NexT主题</a></li>
+</ul>
+]]></content:encoded>
+    </item>
+    <item>
+      <title>介绍页</title>
+      <link>https://shzyjbr.github.com/person-database/person-database/intro.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/intro.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">介绍页</source>
+      <description>介绍页 问渠哪得清如许，为有源头活水来。一个普通的后端程序员。</description>
+      <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
+      <content:encoded><![CDATA[
+<p>问渠哪得清如许，为有源头活水来。一个普通的后端程序员。</p>
+]]></content:encoded>
+    </item>
+    <item>
+      <title>关于作者</title>
+      <link>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</link>
+      <guid>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</guid>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于作者</source>
+      <description>23届双非硕，一个小小的后端程序员。</description>
+      <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
+      <content:encoded><![CDATA[<p>23届双非硕，一个小小的后端程序员。</p>
+]]></content:encoded>
+    </item>
+    <item>
+      <title>项目日志建设之流水日志和程序日志的区分</title>
       <link>https://shzyjbr.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</link>
       <guid>https://shzyjbr.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">【后端开发】项目日志建设之流水日志和程序日志的区分</source>
+      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">项目日志建设之流水日志和程序日志的区分</source>
       <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 项目日志建设之流水日志和程序日志的区分 最近项目要求对程序日志进行两类区分，将日志大体记录为流水日志和程序日志。 所谓流水日志，更详细的说是请求响应流水日志，记录的是系统执行的web请求、响应的内容。其主要方面一般包括后端接口调用、后端调用其他服务接口的请求与...</description>
       <category>项目实践</category>
       <pubDate>Fri, 08 Mar 2024 00:00:00 GMT</pubDate>
