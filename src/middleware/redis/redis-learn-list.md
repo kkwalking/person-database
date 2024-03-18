@@ -1,5 +1,5 @@
 ---
-title: 【Redis】Redis学习笔记之链表
+title: Redis学习笔记之链表
 category: 中间件
 date: 2023-10-14
 tag:

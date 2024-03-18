@@ -1,5 +1,5 @@
 ---
-title: 【Redis】Redis学习笔记之字符串
+title: Redis学习笔记之字符串
 category: 中间件
 date: 2023-10-12
 tag:

@@ -1,5 +1,5 @@
 ---
-title: 【后端开发】logback自定义日志格式，以json格式为例
+title: logback自定义日志格式，以json格式为例
 date: 2024-03-12
 tag: 
   - Java
