@@ -7,14 +7,21 @@ export default sidebar({
       icon: "java",
       collapsible: false,
       prefix: "java/",
-      children: ["dif-between-transactionlog-and-programlog",  "logback-custom-log-formattion"],
+      children: [
+        "dif-between-transactionlog-and-programlog",
+        "logback-custom-log-formattion",
+        "distributed-lock-introduction",
+      ],
     },
     {
       text: "Redis",
       icon: "redis",
       collapsible: false,
       // prefix: "redis/",
-      children: ["middleware/redis/redis-learn-string", "middleware/redis/redis-learn-list"],
+      children: [
+        "middleware/redis/redis-learn-string",
+        "middleware/redis/redis-learn-list",
+      ],
     },
     {
       text: "操作系统",
@@ -37,7 +44,6 @@ export default sidebar({
       prefix: "blog/",
       children: ["hexo-next"],
     },
-
   ],
   "/life": [
     {
@@ -55,6 +61,4 @@ export default sidebar({
       children: ["self-introduction"],
     },
   ],
-
-
 });
