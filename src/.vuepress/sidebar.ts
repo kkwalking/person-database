@@ -11,6 +11,7 @@ export default sidebar({
         "dif-between-transactionlog-and-programlog",
         "logback-custom-log-formattion",
         "distributed-lock-introduction",
+        "how-to-write-a-distributed-lock",
       ],
     },
     {
