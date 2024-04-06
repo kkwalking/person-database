@@ -13,6 +13,7 @@ title: zzk的个人知识库
 - [项目日志建设之流水日志和程序日志的区分](./java/dif-between-transactionlog-and-programlog.md)
 - [logback 自定义日志格式，以 json 格式为例](./java/logback-custom-log-formattion.md)
 - [分布式锁理论介绍](./java/distributed-lock-introduction.md)
+- [如何实现一个分布式锁](./java/how-to-write-a-distributed-lock.md)
 
 ## Redis
 
