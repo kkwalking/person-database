@@ -8,22 +8,17 @@ tag:
 
 # 如何实现一个分布式锁
 
-关于分布式锁的基本知识，可以参考我先前的一篇文章：[分布式锁理论介绍](./distributed-lock-introduction.md)。本篇内容主要介绍如何使用 Java 语言实现一个分布式锁。
+关于分布式锁的基本知识，可以参考我先前的一篇文章：[分布式锁理论介绍](./distributed-lock-introduction.md)。
 
-我们来写一个注解式分布式锁，主要是通过注解+AOP 环绕通知来实现。
+本篇内容主要介绍如何使用 Java 语言实现一个注解式的分布式锁，主要是通过注解+AOP 环绕通知来实现。
 
 ## 1. 锁注解
 
 我们首先写一个锁的注解
 
 ```java
-package com.kelton.lock.annotation;
-
-import java.lang.annotation.*;
-
 /**
  * 分布式锁注解
- * @author kelton
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
@@ -102,6 +97,8 @@ public class RedisLockAspect {
 我们在加锁的时候，需要用上 timeoutForLock 这个属性，我们通过自旋加线程休眠的方式，来达到在一段时间内等待获取锁的目的。如果自旋时间结束后，还没获取锁，则抛出异常，这里可以根据自己情况而定。自旋加锁代码如下：
 
 ```java
+        // 自旋获取锁
+        long endTime = System.currentTimeMillis() + timeoutForLock * 1000;
         boolean acquired = false;
         String uuid = UUID.randomUUID().toString();
         while(System.currentTimeMillis() < endTime) {
@@ -309,10 +306,10 @@ public class LockRenewTask {
 
 我们添加了一些关于锁续约的方法：
 
-- isTimeToRenew(): 判断是否可以对锁进行续约
-- exceedMaxRenewCount(): 判断是否达到最大续约次数
-- renew(): 来标记一次续约操作
-- cancel(): 取消业务方法
+- `isTimeToRenew()`: 判断是否可以对锁进行续约
+- `exceedMaxRenewCount()`: 判断是否达到最大续约次数
+- `renew()`: 来标记一次续约操作
+- `cancel()`: 取消业务方法
 
 ### 3.2 定义一个锁续约任务处理器
 
@@ -426,7 +423,7 @@ public class LockRenewHandler {
 
 两个需要注意的点
 
-- 我们还遍历`taskList`时是拷贝了一份副本进行遍历，因为`taskList`是可变的，这样可以避免在遍历的时候产生并发修改问题。
+- 我们遍历`taskList`时拷贝了一份副本进行遍历，因为`taskList`是可变的，这样可以避免在遍历的时候产生并发修改问题。
 - `cancelTask`需要清理，避免产生内存泄漏。
 
 通过这种方式，`LockRenewHandler` 可以确保 Redis 中的键在需要时得到续约，并自动移除完成或失败的任务。
