@@ -6,8 +6,8 @@
     <link>https://shzyjbr.github.com/person-database/person-database/</link>
     <description>欢迎来到zzk的个人知识库</description>
     <language>zh-CN</language>
-    <pubDate>Sat, 06 Apr 2024 13:10:39 GMT</pubDate>
-    <lastBuildDate>Sat, 06 Apr 2024 13:10:39 GMT</lastBuildDate>
+    <pubDate>Sat, 06 Apr 2024 13:13:43 GMT</pubDate>
+    <lastBuildDate>Sat, 06 Apr 2024 13:13:43 GMT</lastBuildDate>
     <generator>@vuepress/plugin-feed</generator>
     <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
     <category>中间件</category>
@@ -1331,6 +1331,7 @@ OK
 <li><a href="/person-database/java/dif-between-transactionlog-and-programlog.html" target="_blank">项目日志建设之流水日志和程序日志的区分</a></li>
 <li><a href="/person-database/java/logback-custom-log-formattion.html" target="_blank">logback 自定义日志格式，以 json 格式为例</a></li>
 <li><a href="/person-database/java/distributed-lock-introduction.html" target="_blank">分布式锁理论介绍</a></li>
+<li><a href="/person-database/java/how-to-write-a-distributed-lock.html" target="_blank">如何实现一个分布式锁</a></li>
 </ul>
 <h2>Redis</h2>
 <ul>
