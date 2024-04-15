@@ -3,12 +3,12 @@ import navbar from "./navbar.js";
 import sidebar from "./sidebar.js";
 
 export default hopeTheme({
-  hostname: "https://shzyjbr.github.com/person-database",
+  hostname: "https://kkwalking.github.com/person-database",
   // hostname: "http://localhost:8080/person-database",
 
   author: {
     name: "zzk",
-    url: "https://github.com/shzyjbr",
+    url: "https://github.com/kkwalking",
   },
 
   favicon: "/favicon.ico",
@@ -18,7 +18,7 @@ export default hopeTheme({
 
   logo: "/logo.svg",
 
-  repo: "shzyjbr/person-database",
+  repo: "kkwalking/person-database",
   pure: true,
 
   docsDir: "src",
@@ -40,7 +40,7 @@ export default hopeTheme({
     description: "一个普通的后端开发",
     intro: "/intro.html",
     medias: {
-      GitHub: "https://github.com/shzyjbr",
+      GitHub: "https://github.com/kkwalking",
       Email: "mailto://417160807@qq.com"
     },
   },
