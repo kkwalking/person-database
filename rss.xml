@@ -1,22 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="https://shzyjbr.github.com/person-database/person-database/rss.xsl"?>
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="https://kkwalking.github.com/person-database/person-database/rss.xsl"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <atom:link href="https://shzyjbr.github.com/person-database/person-database/rss.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://kkwalking.github.com/person-database/person-database/rss.xml" rel="self" type="application/rss+xml"/>
     <title>zzk的个人知识库</title>
-    <link>https://shzyjbr.github.com/person-database/person-database/</link>
+    <link>https://kkwalking.github.com/person-database/person-database/</link>
     <description>欢迎来到zzk的个人知识库</description>
     <language>zh-CN</language>
-    <pubDate>Sat, 06 Apr 2024 13:13:43 GMT</pubDate>
-    <lastBuildDate>Sat, 06 Apr 2024 13:13:43 GMT</lastBuildDate>
+    <pubDate>Mon, 15 Apr 2024 02:36:58 GMT</pubDate>
+    <lastBuildDate>Mon, 15 Apr 2024 02:36:58 GMT</lastBuildDate>
     <generator>@vuepress/plugin-feed</generator>
     <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
     <category>中间件</category>
     <category>项目实践</category>
     <item>
       <title>如何实现一个分布式锁</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/java/how-to-write-a-distributed-lock.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/java/how-to-write-a-distributed-lock.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">如何实现一个分布式锁</source>
+      <link>https://kkwalking.github.com/person-database/person-database/java/how-to-write-a-distributed-lock.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/java/how-to-write-a-distributed-lock.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">如何实现一个分布式锁</source>
       <description>如何实现一个分布式锁 关于分布式锁的基本知识，可以参考我先前的一篇文章：。 本篇内容主要介绍如何使用 Java 语言实现一个注解式的分布式锁，主要是通过注解+AOP 环绕通知来实现。 1. 锁注解 我们首先写一个锁的注解 expiredTime 是设置锁的过期时间，timeoutForLock 是设置等待锁的超时时间。如果没有等待获得锁的超时时间这个功...</description>
       <pubDate>Fri, 05 Apr 2024 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[
@@ -429,9 +429,9 @@
     </item>
     <item>
       <title>分布式锁理论介绍</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/java/distributed-lock-introduction.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/java/distributed-lock-introduction.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">分布式锁理论介绍</source>
+      <link>https://kkwalking.github.com/person-database/person-database/java/distributed-lock-introduction.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/java/distributed-lock-introduction.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">分布式锁理论介绍</source>
       <description>分布式锁理论介绍 闲话漫谈： 本来是想要写一篇关于 Spring 提供的 RedisLockRegistry 的使用方法及底层原理解析的文章，写着写着发现得先介绍一下分布式锁的基本原理，才能有助于理解一些实现内容。最后发现关于分布式锁的基本介绍也占据了较大篇幅，因此另开一篇，介绍一下分布式锁。 1. 什么是分布式锁？ 何为分布式锁，为什么需要分布式锁？...</description>
       <pubDate>Thu, 04 Apr 2024 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[
@@ -506,9 +506,9 @@ if compare(redisClient.get(key), clientId)
     </item>
     <item>
       <title>RedisLockRegistry的介绍及源码详解</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/java/redis-lock-registry.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/java/redis-lock-registry.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">RedisLockRegistry的介绍及源码详解</source>
+      <link>https://kkwalking.github.com/person-database/person-database/java/redis-lock-registry.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/java/redis-lock-registry.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">RedisLockRegistry的介绍及源码详解</source>
       <description>RedisLockRegistry 的介绍及源码详解 1. RedisLockRegistry 的基本使用 Spring 提供了一套分布式锁的解决方案———RedisLockRegistry 1.1 简单入门使用 1.2 工具封装 2. 源码详解 2.1 可重入 2.2 自旋等待、PubSub 机制 3. 参考文章 https://juejin.cn/...</description>
       <pubDate>Tue, 02 Apr 2024 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[
@@ -528,9 +528,9 @@ if compare(redisClient.get(key), clientId)
     </item>
     <item>
       <title>关于死锁的一点笔记</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/operating-system/deadlock.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/operating-system/deadlock.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于死锁的一点笔记</source>
+      <link>https://kkwalking.github.com/person-database/person-database/operating-system/deadlock.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/operating-system/deadlock.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">关于死锁的一点笔记</source>
       <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 声明：以下内容均来自书籍《现代操作系统》，内容略有改动。 1.资源 死锁的产生与资源相关，因而先给出资源的定义：在进程对设备、文件等取得排他性访问权时，有可能会出现死锁，为便于讨论，把这类需要排他性使用的对象称为资源（resource）。资源可以是硬件设备（如...</description>
       <pubDate>Wed, 05 Apr 2023 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[<div class="hint-container tip">
@@ -719,9 +719,9 @@ $$
     </item>
     <item>
       <title>浅谈单例模式</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/pattern-design/about-singleton-pattern.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/pattern-design/about-singleton-pattern.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">浅谈单例模式</source>
+      <link>https://kkwalking.github.com/person-database/person-database/pattern-design/about-singleton-pattern.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/pattern-design/about-singleton-pattern.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">浅谈单例模式</source>
       <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 浅谈单例模式 饿汉模式 缺点：在需要初始化许多对象的时候会导致系统启动较慢，比如在有许多个单例对象的容器中，启动该容器的初始过程会比较长。 懒加载模式 缺点：同步方法锁住了对象，降低了系统的处理速度。 错误的双重锁检查 这样的写法是有问题的。在JVM中， in...</description>
       <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[<div class="hint-container tip">
@@ -814,9 +814,9 @@ $$
     </item>
     <item>
       <title>Redis学习笔记之链表</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-list.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-list.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">Redis学习笔记之链表</source>
+      <link>https://kkwalking.github.com/person-database/person-database/middleware/redis/redis-learn-list.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/middleware/redis/redis-learn-list.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">Redis学习笔记之链表</source>
       <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的Redis-3.0-annotated版本 一、Redis中的链表应用场景 链表是一种应用非常广泛的数据结...</description>
       <category>中间件</category>
       <pubDate>Sat, 14 Oct 2023 00:00:00 GMT</pubDate>
@@ -997,9 +997,9 @@ list *listCreate(void)
     </item>
     <item>
       <title>Redis学习笔记之字符串</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-string.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/middleware/redis/redis-learn-string.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">Redis学习笔记之字符串</source>
+      <link>https://kkwalking.github.com/person-database/person-database/middleware/redis/redis-learn-string.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/middleware/redis/redis-learn-string.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">Redis学习笔记之字符串</source>
       <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的Redis-3.0-annotated版本 一、SDS基本概念介绍 Redis有五种基础数据结构，分别是s...</description>
       <category>中间件</category>
       <pubDate>Thu, 12 Oct 2023 00:00:00 GMT</pubDate>
@@ -1089,9 +1089,9 @@ OK
     </item>
     <item>
       <title>hexo搭建个人博客+NexT主题</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/blog/hexo-next.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/blog/hexo-next.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">hexo搭建个人博客+NexT主题</source>
+      <link>https://kkwalking.github.com/person-database/person-database/blog/hexo-next.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/blog/hexo-next.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">hexo搭建个人博客+NexT主题</source>
       <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 1 hexo简介 Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，生成静态网页。 --Hexo官网 2 hexo安装 安装hexo需要先安装node.js和Git 2.1 安装node.js Node.j...</description>
       <pubDate>Fri, 27 Nov 2020 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[<div class="hint-container tip">
@@ -1166,9 +1166,9 @@ OK
     </item>
     <item>
       <title>logback自定义日志格式，以json格式为例</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/java/logback-custom-log-formattion.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/java/logback-custom-log-formattion.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">logback自定义日志格式，以json格式为例</source>
+      <link>https://kkwalking.github.com/person-database/person-database/java/logback-custom-log-formattion.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/java/logback-custom-log-formattion.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">logback自定义日志格式，以json格式为例</source>
       <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 【后端开发】logback自定义日志格式，以json格式为例 一、背景 在项目开发中，我们有时候会遇到需要指定日志格式的场景，比如项目的日志接入了在线日志收集系统，该收集系统要求日志需要满足其指定的日志格式才会被收集。 接下来，我就以打印json格式的日志为例...</description>
       <pubDate>Tue, 12 Mar 2024 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[<div class="hint-container tip">
@@ -1315,9 +1315,9 @@ OK
     </item>
     <item>
       <title>zzk的个人知识库</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/home.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/home.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">zzk的个人知识库</source>
+      <link>https://kkwalking.github.com/person-database/person-database/home.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/home.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">zzk的个人知识库</source>
       <description>拉个 Star 如果本知识库的内容帮助到你，还请点个免费的 Star，感谢。传送门：GitHub 开发 Redis 操作系统 设计模式 博客</description>
       <pubDate>Thu, 07 Mar 2024 09:41:42 GMT</pubDate>
       <content:encoded><![CDATA[<div class="hint-container tip">
@@ -1354,9 +1354,9 @@ OK
     </item>
     <item>
       <title>介绍页</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/intro.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/intro.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">介绍页</source>
+      <link>https://kkwalking.github.com/person-database/person-database/intro.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/intro.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">介绍页</source>
       <description>介绍页 问渠哪得清如许，为有源头活水来。一个普通的后端程序员。</description>
       <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[
@@ -1365,9 +1365,9 @@ OK
     </item>
     <item>
       <title>关于作者</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/about-the-author/self-introduction.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于作者</source>
+      <link>https://kkwalking.github.com/person-database/person-database/about-the-author/self-introduction.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/about-the-author/self-introduction.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">关于作者</source>
       <description>23届双非硕，一个小小的后端程序员。</description>
       <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[<p>23届双非硕，一个小小的后端程序员。</p>
@@ -1375,9 +1375,9 @@ OK
     </item>
     <item>
       <title>项目日志建设之流水日志和程序日志的区分</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">项目日志建设之流水日志和程序日志的区分</source>
+      <link>https://kkwalking.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/java/dif-between-transactionlog-and-programlog.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">项目日志建设之流水日志和程序日志的区分</source>
       <description>拉个Star 如果本知识库的内容帮助到你，还请点个免费的Star，感谢。传送门：GitHub 项目日志建设之流水日志和程序日志的区分 最近项目要求对程序日志进行两类区分，将日志大体记录为流水日志和程序日志。 所谓流水日志，更详细的说是请求响应流水日志，记录的是系统执行的web请求、响应的内容。其主要方面一般包括后端接口调用、后端调用其他服务接口的请求与...</description>
       <category>项目实践</category>
       <pubDate>Fri, 08 Mar 2024 00:00:00 GMT</pubDate>
@@ -1474,9 +1474,9 @@ OK
     </item>
     <item>
       <title>关于分享内容</title>
-      <link>https://shzyjbr.github.com/person-database/person-database/life/comeon.html</link>
-      <guid>https://shzyjbr.github.com/person-database/person-database/life/comeon.html</guid>
-      <source url="https://shzyjbr.github.com/person-database/person-database/rss.xml">关于分享内容</source>
+      <link>https://kkwalking.github.com/person-database/person-database/life/comeon.html</link>
+      <guid>https://kkwalking.github.com/person-database/person-database/life/comeon.html</guid>
+      <source url="https://kkwalking.github.com/person-database/person-database/rss.xml">关于分享内容</source>
       <description>分享内容 生活分享的内容写在这里</description>
       <pubDate>Thu, 07 Mar 2024 00:00:00 GMT</pubDate>
       <content:encoded><![CDATA[<h2>分享内容</h2>
