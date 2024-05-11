@@ -14,6 +14,7 @@ title: zzk的个人知识库
 - [logback 自定义日志格式，以 json 格式为例](./java/logback-custom-log-formattion.md)
 - [分布式锁理论介绍](./java/distributed-lock-introduction.md)
 - [如何实现一个分布式锁](./java/how-to-write-a-distributed-lock.md)
+- [使用jlink和jpackage对javafx打包成可执行程序和可安装程序](./java/javafx-package-introduction.md)
 
 ## Redis
 
