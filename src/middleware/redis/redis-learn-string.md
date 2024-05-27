@@ -6,7 +6,7 @@ tag:
   - Redis
 ---
 ::: tip 拉个Star
-- 如果<a href='https://github.com/shzyjbr/person-database' target='blank'>本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href='https://github.com/shzyjbr/person-database' target='blank'>GitHub</a>
+- 如果<a href='https://github.com/kkwalking/person-database' target='blank'>本知识库</a>的内容帮助到你，还请点个免费的Star，感谢。传送门：<a href='https://github.com/kkwalking/person-database' target='blank'>GitHub</a>
 :::
 
 > 本系列是个人的Redis学习笔记，参考的书籍有《Redis设计与实现》、《Redis深度历险--核心原理与应用实践》，Redis源码版本是黄健宏老师注释的[Redis-3.0-annotated](https://github.com/huangz1990/redis-3.0-annotated)版本

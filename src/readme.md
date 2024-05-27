@@ -34,6 +34,7 @@ footer: 欢迎来到zzk的个人知识库，希望我的分享可以帮助到你
 - [分布式锁理论介绍](./java/distributed-lock-introduction.md)
 - [如何实现一个分布式锁](./java/how-to-write-a-distributed-lock.md)
 - [使用jlink和jpackage对javafx打包成可执行程序和可安装程序](./src/java/javafx-package-introduction.md)
+- - [OkHttp开启线程池复用连接导致的EOFException解决方案](./java/okhttp-conncection-pool-problem.md)
 
 ### Redis
 
@@ -54,5 +55,5 @@ footer: 欢迎来到zzk的个人知识库，希望我的分享可以帮助到你
 
 ::: tip 拉个 Star
 
-- 如果<a href='https://github.com/shzyjbr/person-database' target='blank'>本知识库</a>的内容帮助到你，还请点个免费的 Star，感谢。传送门：<a href='https://github.com/shzyjbr/person-database' target='blank'>GitHub</a>
+- 如果<a href='https://github.com/kkwalking/person-database' target='blank'>本知识库</a>的内容帮助到你，还请点个免费的 Star，感谢。传送门：<a href='https://github.com/kkwalking/person-database' target='blank'>GitHub</a>
   :::

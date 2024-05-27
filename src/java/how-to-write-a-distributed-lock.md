@@ -461,5 +461,5 @@ public class LockRenewHandler {
 
 ::: tip 拉个 Star
 
-- 看到这里，如果<a href='https://github.com/shzyjbr/person-database' target='blank'>本篇文章</a>的内容帮助到你，还请点个免费的 Star，感谢。传送门：<a href='https://github.com/shzyjbr/person-database' target='blank'>GitHub</a>
+- 看到这里，如果<a href='https://github.com/kkwalking/person-database' target='blank'>本篇文章</a>的内容帮助到你，还请点个免费的 Star，感谢。传送门：<a href='https://github.com/kkwalking/person-database' target='blank'>GitHub</a>
   :::
